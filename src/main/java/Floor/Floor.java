@@ -1,10 +1,14 @@
 package Floor;
 
-import Elevator.ElevatorMessage;
 import core.Button;
+import core.ElevatorMessage;
+import core.EventListener;
+import core.EventNotifier;
 import core.Lamp;
 
 public class Floor{
+	
+	public static int NEXT_PORT = 62442;
 	
 	int port = -1;
 	
@@ -12,8 +16,8 @@ public class Floor{
 	boolean highestFloor = false;
 	boolean lowestFloor = false;
 	
-	ArrivalSensor arrivalSensor = null;
-	Dispatcher dispatcher = null;
+	EventListener arrivalSensor = null;
+	EventNotifier notifier = null;
 	
 	Button reqBtnUp = null;
 	Button reqBtnDown = null;
@@ -46,9 +50,9 @@ public class Floor{
 		btnString = "Floor " + floorNum + " direction DOWN lamp";
 		this.directionLampDown = new Lamp(btnString, false);
 		
-		this.arrivalSensor = new ArrivalSensor();
-		this.port = arrivalSensor.getPort();
-		this.dispatcher = new Dispatcher();
+		this.port = NEXT_PORT++;
+		this.arrivalSensor = new EventListener(this.port, "ARRIVAL SENSOR");
+		this.notifier = new EventNotifier(23, "FLOOR NOTIFIER");
 	}
 	
 	public void reqUp(int num) {
@@ -56,7 +60,7 @@ public class Floor{
 		if (highestFloor) {
 			throw new IllegalStateException();
 		}
-		dispatcher.sendUpRequest(floorNum, num);
+		this.notifier.sendNotif(1, floorNum, num);
 		reqLampUp.setOn(true);
 		reqBtnUp.setPressed(true);
 	}
@@ -66,7 +70,7 @@ public class Floor{
 		if (lowestFloor) {
 			throw new IllegalStateException();
 		}
-		dispatcher.sendDownRequest(floorNum, num);
+		this.notifier.sendNotif(2, floorNum, num);
 		reqLampDown.setOn(true);
 		reqBtnDown.setPressed(true);
 	}
@@ -76,7 +80,7 @@ public class Floor{
 		System.out.println("FLOOR "+floorNum+": Starting arrival sensor...");
 		
 		for(;;) {
-			ElevatorMessage msg = arrivalSensor.waitForElevator();
+			ElevatorMessage msg = arrivalSensor.waitForNotification();
 			System.out.println("\nFLOOR " + floorNum + ": ELEVATOR ARRIVED. " + msg);
 		}
 	}

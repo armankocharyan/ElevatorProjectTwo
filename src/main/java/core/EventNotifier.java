@@ -1,4 +1,4 @@
-package Elevator;
+package core;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -7,14 +7,16 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
-import Scheduler.ElevatorListener;
-
-public class ElevatorNotifier {
+public class EventNotifier {
 	protected DatagramPacket sendPacket;
 	protected DatagramSocket sendSocket;
 	protected InetAddress localhost;
+	int PORT;
+	String name = "EVENT NOTIFIER";
 	
-	public ElevatorNotifier() {
+	public EventNotifier(int PORT, String name) {
+		this.PORT = PORT;
+		this.name = name;
 		try {
 			this.localhost = InetAddress.getLocalHost();
 		} catch (UnknownHostException e) {
@@ -32,8 +34,8 @@ public class ElevatorNotifier {
 	protected void sendMessage(ElevatorMessage msg) {
 		try {
 			DatagramSocket sendSocket = new DatagramSocket();
-			DatagramPacket sendPacket = new DatagramPacket(msg.getBytes(), ElevatorMessage.SIZE, localhost, ElevatorListener.PORT);
-			System.out.println("ELEVATOR NOTIFIER");
+			DatagramPacket sendPacket = new DatagramPacket(msg.getBytes(), ElevatorMessage.SIZE, localhost, this.PORT);
+			System.out.println(name);
 			System.out.println("SENDING ELEVATOR ARRIVED NOTIFICATION" + msg);
 			try {
 				sendSocket.send(sendPacket);

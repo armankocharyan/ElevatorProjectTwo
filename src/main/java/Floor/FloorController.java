@@ -7,7 +7,9 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
-import Elevator.ElevatorMessage;
+import core.ElevatorMessage;
+import core.EventListener;
+import core.EventNotifier;
 
 public class FloorController {
 	
@@ -16,7 +18,7 @@ public class FloorController {
 	int numFloors;
 	Floor[] floors;
 	
-	NotificationListener listener;
+	EventListener listener;
 	
 	public FloorController(int numFloors) {
 		this.numFloors = numFloors;
@@ -32,7 +34,7 @@ public class FloorController {
 		}
 		
 		
-		listener = new NotificationListener();
+		listener = new EventListener(42424, "FLOOR ELEVATOR LISTENER");
 		/*
 		try {
 			Thread.sleep(2000);
@@ -69,25 +71,9 @@ public class FloorController {
 		for(;;) {
 			ElevatorMessage msg = listener.waitForNotification();
 			System.out.println("\nFLOOR CONTROLLER: RECEIVED ELEVATOR NOTIFICATION " + msg);
-			byte[] data = msg.getBytes();
-			DatagramPacket pkg;
-			try {
-				pkg = new DatagramPacket(data, data.length, InetAddress.getLocalHost(), floors[msg.getCurrentFloor()].getPort());
-				try {
-					DatagramSocket send = new DatagramSocket();
-					send.send(pkg);
-					send.close();
-				} catch (SocketException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			} catch (UnknownHostException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
+			
+			EventNotifier notif = new EventNotifier(floors[msg.getCurrentFloor()].getPort(), "ARRIVAL NOTIFIER");
+			notif.sendNotif(msg.getDirection(), msg.getCurrentFloor(), msg.getMovingTo());
 		}
 	}
 	

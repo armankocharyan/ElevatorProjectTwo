@@ -1,4 +1,4 @@
-package Elevator;
+package core;
 
 public class ElevatorMessage {
 	public static final int SIZE = 7;

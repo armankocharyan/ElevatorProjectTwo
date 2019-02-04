@@ -2,6 +2,7 @@ package Elevator;
 
 
 import core.Button;
+import core.EventNotifier;
 import core.Lamp;
 
 public class Elevator {
@@ -17,14 +18,14 @@ public class Elevator {
 	Lamp[] floorLamps;
 	Button[] floorBtns;
 	
-	ElevatorNotifier notif;
+	EventNotifier notif;
 	
 	public Elevator(int elevatorNum, int numFloors) {
 		this.numFloors = numFloors;
 		this.currentFloor = 0;
 		this.direction = 1;
 		this.elevatorNum = elevatorNum;
-		this.notif = new ElevatorNotifier();
+		this.notif = new EventNotifier(24, "ELEVATOR NOTIFIER");
 	}
 	
 	public int getCurrentFloor() {

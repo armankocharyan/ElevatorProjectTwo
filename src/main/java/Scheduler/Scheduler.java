@@ -1,26 +1,28 @@
 package Scheduler;
 
-import Elevator.ElevatorMessage;
-import Floor.FloorMessage;
+
+import core.ElevatorMessage;
+import core.EventListener;
+import core.EventNotifier;
 
 public class Scheduler {
 	
-	FloorRequestListener floorListener;
-	ElevatorListener elevListener;
-	ElevatorDispatcher dispatcher;
+	EventListener floorListener;
+	EventListener elevListener;
+	EventNotifier floorNotifier;
 	
 	
 	public Scheduler() {
-		floorListener = new FloorRequestListener();
-		elevListener = new ElevatorListener();
-		dispatcher = new ElevatorDispatcher();
+		floorListener = new EventListener(23,"FLOOR REQUEST LISTENER");
+		elevListener = new EventListener(24, "ELEVATOR LISTENER");
+		floorNotifier = new EventNotifier(42424, "SCHEDULER ELEVATOR NOTIFIER");
 	}
 	
 	public void startFloorListen() {
 		System.out.println("SCHEDULER: Starting floor listener...");
 		
 		for(;;) {
-			FloorMessage msg = floorListener.waitForFloorRequest();
+			ElevatorMessage msg = floorListener.waitForNotification();
 			System.out.println("\nSCHEDULER: RECEIVED FLOOR REQUEST " + msg);
 		}
 	}
@@ -31,7 +33,7 @@ public class Scheduler {
 		for(;;) {
 			ElevatorMessage msg = elevListener.waitForNotification();
 			System.out.println("\nSCHEDULER: RECEIVED ELEVATOR NOTIFICATION " + msg);
-			this.dispatcher.sendNotif(msg.getDirection(), msg.getCurrentFloor(), msg.getMovingTo());
+			this.floorNotifier.sendNotif(msg.getDirection(), msg.getCurrentFloor(), msg.getMovingTo());
 			
 		}
 	}
