@@ -18,6 +18,7 @@ public class Floor{
 	
 	EventListener arrivalSensor = null;
 	EventNotifier notifier = null;
+	EventNotifier occupancyNotifier = null;
 	
 	Button reqBtnUp = null;
 	Button reqBtnDown = null;
@@ -53,6 +54,7 @@ public class Floor{
 		this.port = NEXT_PORT++;
 		this.arrivalSensor = new EventListener(this.port, "ARRIVAL SENSOR");
 		this.notifier = new EventNotifier(23, "FLOOR NOTIFIER");
+		this.occupancyNotifier = new EventNotifier(24, "OCCUPANCY NOTIFIER");
 	}
 	
 	public void reqUp(int num) {
@@ -60,6 +62,8 @@ public class Floor{
 		if (highestFloor) {
 			throw new IllegalStateException();
 		}
+		
+		
 		this.notifier.sendNotif(1, floorNum, num);
 		reqLampUp.setOn(true);
 		reqBtnUp.setPressed(true);
@@ -75,6 +79,22 @@ public class Floor{
 		reqBtnDown.setPressed(true);
 	}
 	
+	public void resetDownBtn() {
+		if(!lowestFloor) {
+			reqLampDown.setOn(false);
+			reqBtnDown.setPressed(false);
+		}
+		
+	}
+	
+	public void resetUpBtn() {
+		if(!highestFloor) {
+			reqLampUp.setOn(false);
+			reqBtnUp.setPressed(false);
+		}
+		
+	}
+	
 	public void listen() {
 		
 		System.out.println("FLOOR "+floorNum+": Starting arrival sensor...");
@@ -82,6 +102,16 @@ public class Floor{
 		for(;;) {
 			ElevatorMessage msg = arrivalSensor.waitForNotification();
 			System.out.println("\nFLOOR " + floorNum + ": ELEVATOR ARRIVED. " + msg);
+			if (msg.getDirection() == 1) {
+				resetUpBtn();
+				directionLampUp.setOn(true);
+				directionLampDown.setOn(false);
+			}
+			else {
+				resetDownBtn();
+				directionLampUp.setOn(false);
+				directionLampDown.setOn(true);
+			}
 		}
 	}
 	

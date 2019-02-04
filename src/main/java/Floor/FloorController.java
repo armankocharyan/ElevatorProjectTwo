@@ -35,34 +35,6 @@ public class FloorController {
 		
 		
 		listener = new EventListener(42424, "FLOOR ELEVATOR LISTENER");
-		/*
-		try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		FloorMessage msg = new FloorMessage(1, 0, 3);
-		byte[] data = msg.getBytes();
-		DatagramPacket pkg;
-		try {
-			pkg = new DatagramPacket(data, data.length, InetAddress.getLocalHost(), floors[2].getPort());
-			try {
-				DatagramSocket send = new DatagramSocket();
-				send.send(pkg);
-				send.close();
-			} catch (SocketException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		} catch (UnknownHostException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		*/
 		
 	}
 	public void startElevatorListen() {
@@ -74,10 +46,17 @@ public class FloorController {
 			
 			EventNotifier notif = new EventNotifier(floors[msg.getCurrentFloor()].getPort(), "ARRIVAL NOTIFIER");
 			notif.sendNotif(msg.getDirection(), msg.getCurrentFloor(), msg.getMovingTo());
+			
+			if(msg.getMovingTo() != -1) {
+				notif = new EventNotifier(25, "OCCUPANCY NOTIFIER");
+				notif.sendNotif(msg.getDirection(), msg.getCurrentFloor(), msg.getMovingTo());
+			}
+			
+			
 		}
 	}
 	
-	public void start() {
+	public void start() throws InterruptedException {
 		FloorController s = this;
 		Thread t2 = new Thread(new Runnable() {
 			@Override
@@ -88,11 +67,21 @@ public class FloorController {
 		
 		
 		t2.start();
+		
+		Thread.sleep(5000);
+		
+		floors[0].reqUp(4);
+		
 	}
 	
 	public static void main(String[] args) {
-		FloorController c = new FloorController(3);
-		c.start();
+		FloorController c = new FloorController(5);
+		try {
+			c.start();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 }

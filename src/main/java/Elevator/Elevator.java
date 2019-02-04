@@ -40,17 +40,18 @@ public class Elevator {
 		this.notif.sendNotif(direction, currentFloor, movingTo);
 	}
 	
-	public void arriveAtFloor(int num) {
-		if ((num - currentFloor) > 0) direction = 1;
-		else direction = 2;
-		
-		currentFloor = num;
+	public void rideToFloor(int floor, int dir, int movingTo) {
+		this.currentFloor = movingTo;
+		this.direction = dir;
+		this.movingTo = -1;
+		announceFloor(-1);
 	}
 	
-	public void moveToFloor(int num) {
-		if ((num - currentFloor) > 0) direction = 1;
-		else direction = 2;
-		
+	public void pickUpPerson(int floor, int dir, int movingTo) {
+		this.currentFloor = floor;
+		this.direction = dir;
+		this.movingTo = movingTo;
+		announceFloor(movingTo);
 	}
 	
 	

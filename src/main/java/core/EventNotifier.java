@@ -35,8 +35,8 @@ public class EventNotifier {
 		try {
 			DatagramSocket sendSocket = new DatagramSocket();
 			DatagramPacket sendPacket = new DatagramPacket(msg.getBytes(), ElevatorMessage.SIZE, localhost, this.PORT);
-			System.out.println(name);
-			System.out.println("SENDING ELEVATOR ARRIVED NOTIFICATION" + msg);
+			System.out.print(name);
+			System.out.println(": SENDING EVENT INFORMATION" + msg);
 			try {
 				sendSocket.send(sendPacket);
 			} catch (IOException e) {

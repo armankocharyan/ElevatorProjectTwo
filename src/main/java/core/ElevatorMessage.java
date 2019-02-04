@@ -1,12 +1,13 @@
 package core;
 
 public class ElevatorMessage {
-	public static final int SIZE = 7;
+	public static final int SIZE = 9;
 	public static final byte SEP = '*';
 	
 	int direction = 0; //1 -> UP, 2 -> DOWN
 	int currFloor;
 	int movingTo;
+	int car;
 	
 	byte[] msg;
 	
@@ -14,8 +15,10 @@ public class ElevatorMessage {
 		this.direction = direction;
 		this.movingTo = movingTo;
 		this.currFloor = currFloor;
+		//TODO: change this
+		this.car = 1;
 		
-		msg = new byte[7];
+		msg = new byte[9];
 		msg[0] = SEP;
 		msg[1] = (byte)this.direction;
 		msg[2] = SEP;
@@ -23,14 +26,18 @@ public class ElevatorMessage {
 		msg[4] = SEP;
 		msg[5] = (byte)this.movingTo;
 		msg[6] = SEP;
+		msg[7] = (byte)this.car;
+		msg[8] = SEP;
 	}
 	
 	public ElevatorMessage(byte[] msg) {
 		this.msg = msg;
 		
+		
 		this.direction = (int)msg[1];
 		this.currFloor = (int)msg[3];
 		this.movingTo = (int)msg[5];
+		this.car = 1;
 	}
 	
 	public boolean isUp() {
@@ -51,6 +58,10 @@ public class ElevatorMessage {
 	
 	public int getMovingTo() {
 		return movingTo;
+	}
+	
+	public int getCar() {
+		return this.car;
 	}
 	
 	public byte[] getBytes() {
