@@ -5,16 +5,15 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 
-import Floor.FloorMessage;
+import Elevator.ElevatorMessage;
 
-public class FloorRequestListener {
-
-	public static final int PORT = 23;
+public class ElevatorListener {
+	public static final int PORT = 24;
 	
-	DatagramPacket recvPacket;
-	DatagramSocket recvSocket;
+	protected DatagramPacket recvPacket;
+	protected DatagramSocket recvSocket;
 	
-	public FloorRequestListener() {
+	public ElevatorListener() {
 		try {
 			recvSocket = new DatagramSocket(PORT);
 		} catch (SocketException e) {
@@ -23,24 +22,22 @@ public class FloorRequestListener {
 		}
 	}
 	
-	public FloorMessage waitForFloorRequest() {
-		FloorMessage msg;
-		byte[] data = new byte[FloorMessage.SIZE];
+	public ElevatorMessage waitForNotification() {
+		ElevatorMessage msg;
+		byte[] data = new byte[ElevatorMessage.SIZE];
 		
 		recvPacket = new DatagramPacket(data, data.length);
-		System.out.println("FLOOR REQUEST LISTENER: Waiting for a request...");
+		System.out.println("ELEVATOR LISTENER: Waiting for a notification...");
 		try {
 			recvSocket.receive(recvPacket);
-			System.out.println("FLOOR REQUEST LISTENER: RECEIVED REQUEST");
+			System.out.println("ELEVATOR LISTENER: RECEIVED NOTIFICATION");
 		} catch (IOException e) {
 			System.out.print("IO Exception: likely:");
 			System.out.println("Receive Socket Timed Out.\n" + e);
 			e.printStackTrace();
 			System.exit(1);
 		}
-		msg = new FloorMessage(recvPacket.getData());
+		msg = new ElevatorMessage(recvPacket.getData());
 		return msg;
 	}
-	
-	
 }

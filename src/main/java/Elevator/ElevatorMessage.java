@@ -1,20 +1,18 @@
-package Floor;
+package Elevator;
 
-
-public class FloorMessage {
-	
+public class ElevatorMessage {
 	public static final int SIZE = 7;
 	public static final byte SEP = '*';
 	
 	int direction = 0; //1 -> UP, 2 -> DOWN
-	int floor = 0;
 	int currFloor;
+	int movingTo;
 	
 	byte[] msg;
 	
-	public FloorMessage(int direction, int currFloor, int floor) {
+	public  ElevatorMessage(int direction, int currFloor, int movingTo) {
 		this.direction = direction;
-		this.floor = floor;
+		this.movingTo = movingTo;
 		this.currFloor = currFloor;
 		
 		msg = new byte[7];
@@ -23,16 +21,16 @@ public class FloorMessage {
 		msg[2] = SEP;
 		msg[3] = (byte)this.currFloor;
 		msg[4] = SEP;
-		msg[5] = (byte)this.floor;
+		msg[5] = (byte)this.movingTo;
 		msg[6] = SEP;
 	}
 	
-	public FloorMessage(byte[] msg) {
+	public ElevatorMessage(byte[] msg) {
 		this.msg = msg;
 		
 		this.direction = (int)msg[1];
 		this.currFloor = (int)msg[3];
-		this.floor = (int)msg[5];
+		this.movingTo = (int)msg[5];
 	}
 	
 	public boolean isUp() {
@@ -43,12 +41,16 @@ public class FloorMessage {
 		return direction == 2;
 	}
 	
-	public int getFloorNum() {
-		return floor;
+	public int getCurrentFloor() {
+		return currFloor;
 	}
 	
-	public int getRequestingFloor() {
-		return currFloor;
+	public int getDirection() {
+		return direction;
+	}
+	
+	public int getMovingTo() {
+		return movingTo;
 	}
 	
 	public byte[] getBytes() {
@@ -65,9 +67,8 @@ public class FloorMessage {
 			sb.append("DOWN");
 		}
 		
-		sb.append("\nFloor Requesting: " + currFloor +"\nFloor Requested: " + floor);
+		sb.append("\nOn Floor: " + currFloor);
+		if (movingTo > 0) sb.append("\nGoing To: " + movingTo);
 		return sb.toString();
 	}
-	
-	
 }

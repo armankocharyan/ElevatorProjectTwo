@@ -6,37 +6,37 @@ import java.net.DatagramSocket;
 import java.net.SocketException;
 
 import Elevator.ElevatorMessage;
+import Scheduler.ElevatorListener;
 
-public class ArrivalSensor{
-	public static int NEXT_PORT = 62443;
-	int port;
+// TODO: PUT ALL THESE IN ONE CLASS
+
+public class NotificationListener{
 	
-	DatagramPacket recvPacket;
-	DatagramSocket recvSocket;
-
-	public ArrivalSensor() {
-		this.port = NEXT_PORT++;
+	
+	public static final int PORT = 42424;
+	protected DatagramPacket recvPacket;
+	protected DatagramSocket recvSocket;
+	
+	public NotificationListener() {
 		try {
-			recvSocket = new DatagramSocket(this.port);
-			System.out.println("ARRIVAL SENSOR PORT: " + port);
+			recvSocket = new DatagramSocket(PORT);
 		} catch (SocketException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 	
-	public int getPort() {
-		return port;
-	}
 	
-	public ElevatorMessage waitForElevator() {
+	
+	public ElevatorMessage waitForNotification() {
 		ElevatorMessage msg;
 		byte[] data = new byte[ElevatorMessage.SIZE];
 		
 		recvPacket = new DatagramPacket(data, data.length);
-		System.out.println("ARRIVAL SENSOR: waiting for elevator...");
+		System.out.println("SCHEDULER LISTENER: Waiting for a notification...");
 		try {
 			recvSocket.receive(recvPacket);
-			System.out.println("ARRIVAL SENSOR: ELEVATOR ARRIVED");
+			System.out.println("SCHEDULER LISTENER: RECEIVED NOTIFICATION");
 		} catch (IOException e) {
 			System.out.print("IO Exception: likely:");
 			System.out.println("Receive Socket Timed Out.\n" + e);
@@ -46,6 +46,5 @@ public class ArrivalSensor{
 		msg = new ElevatorMessage(recvPacket.getData());
 		return msg;
 	}
-
 
 }

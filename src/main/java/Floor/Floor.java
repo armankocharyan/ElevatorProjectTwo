@@ -1,5 +1,6 @@
 package Floor;
 
+import Elevator.ElevatorMessage;
 import core.Button;
 import core.Lamp;
 
@@ -29,15 +30,21 @@ public class Floor{
 		this.highestFloor = highestFloor;
 		this.lowestFloor = lowestFloor;
 		if(!highestFloor) {
-			reqBtnUp = new Button(true);
-			reqLampUp = new Lamp(false);
+			String btnString = "Floor " + floorNum + " Request UP btn";
+			String lampString = "Floor " + floorNum + " Request UP lamp";
+			reqBtnUp = new Button(btnString, true);
+			reqLampUp = new Lamp(lampString,false);
 		}
 		if(!lowestFloor) {
-			reqBtnDown = new Button(true);
-			reqLampDown = new Lamp(false);
+			String btnString = "Floor " + floorNum + " Request DOWN btn";
+			String lampString = "Floor " + floorNum + " Request DOWN lamp";
+			reqBtnDown = new Button(btnString, true);
+			reqLampDown = new Lamp(lampString,false);
 		}
-		this.directionLampUp = new Lamp(false);
-		this.directionLampDown = new Lamp(false);
+		String btnString = "Floor " + floorNum + " direction UP lamp";
+		this.directionLampUp = new Lamp(btnString, false);
+		btnString = "Floor " + floorNum + " direction DOWN lamp";
+		this.directionLampDown = new Lamp(btnString, false);
 		
 		this.arrivalSensor = new ArrivalSensor();
 		this.port = arrivalSensor.getPort();
@@ -69,8 +76,8 @@ public class Floor{
 		System.out.println("FLOOR "+floorNum+": Starting arrival sensor...");
 		
 		for(;;) {
-			FloorMessage msg = arrivalSensor.waitForElevator();
-			System.out.println("FLOOR " + floorNum + ": ELEVATOR ARRIVED. " + msg);
+			ElevatorMessage msg = arrivalSensor.waitForElevator();
+			System.out.println("\nFLOOR " + floorNum + ": ELEVATOR ARRIVED. " + msg);
 		}
 	}
 	

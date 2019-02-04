@@ -41,7 +41,7 @@ public class Dispatcher {
 	void sendMessage(FloorMessage msg) {
 		try {
 			DatagramSocket sendSocket = new DatagramSocket();
-			DatagramPacket sendPacket = new DatagramPacket(msg.getBytes(), msg.SIZE, localhost, FloorRequestListener.PORT);
+			DatagramPacket sendPacket = new DatagramPacket(msg.getBytes(), FloorMessage.SIZE, localhost, FloorRequestListener.PORT);
 			System.out.println("FLOOR DISPATCHER");
 			System.out.println("SENDING FLOOR BUTTON REQUEST" + msg);
 			try {
