@@ -71,7 +71,7 @@ public class FloorController {
 		Thread.sleep(5000);
 		
 		floors[0].reqUp(4);
-		Thread.sleep(100);
+		Thread.sleep(30);
 		floors[2].reqUp(3);
 		
 	}

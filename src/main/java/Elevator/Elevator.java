@@ -41,6 +41,12 @@ public class Elevator {
 	}
 	
 	public void rideToFloor(int floor, int dir, int movingTo) {
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		this.currentFloor = movingTo;
 		this.direction = dir;
 		this.movingTo = -1;
@@ -48,6 +54,12 @@ public class Elevator {
 	}
 	
 	public void pickUpPerson(int floor, int dir, int movingTo) {
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		this.currentFloor = floor;
 		this.direction = dir;
 		this.movingTo = movingTo;

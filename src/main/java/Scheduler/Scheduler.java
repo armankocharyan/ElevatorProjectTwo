@@ -32,13 +32,11 @@ public class Scheduler {
 
 	}
 
-	public void startFloorListen() throws InterruptedException {
+	public synchronized void startFloorListen() throws InterruptedException {
 		System.out.println("SCHEDULER: Starting floor listener...");
 
 		for (;;) {
-
-			synchronized (this) {
-				while (queue.size() >= 1) {
+				while (queue.size() >= 2) {
 					wait();
 				}
 				ElevatorMessage msg = floorListener.waitForNotification();
@@ -47,20 +45,18 @@ public class Scheduler {
 				notifyAll();
 			}
 
-		}
+		
 	}
 
-	public void dequeue() throws InterruptedException {
+	public synchronized void dequeue() throws InterruptedException {
 		for (;;) {
-			synchronized (this) {
 				while (queue.isEmpty()) {
 					wait();
 				}
 				ElevatorMessage msg = queue.remove();
 				this.floorReqNotifier.sendNotif(msg.getDirection(), msg.getCurrentFloor(), msg.getMovingTo());
-				notifyAll();
+				
 			}
-		}
 	}
 
 	public void startElevatorListen() {
@@ -70,13 +66,17 @@ public class Scheduler {
 			ElevatorMessage msg = elevListener.waitForNotification();
 			System.out.println("\nSCHEDULER: RECEIVED ELEVATOR NOTIFICATION " + msg);
 			this.floorNotifier.sendNotif(msg.getDirection(), msg.getCurrentFloor(), msg.getMovingTo());
-			if (msg.getMovingTo() == -1) {
+			synchronized(this) {
+				if (msg.getMovingTo() == -1) {
+					notifyAll();
+				}
 			}
+			
 
 		}
 	}
 
-	public void startElevEnterListen() {
+	public  void startElevEnterListen() {
 		System.out.println("SCHEDULER: Starting elevator occupancy listener...");
 
 		for (;;) {
@@ -125,10 +125,10 @@ public class Scheduler {
 			}
 		});
 
-		t1.start();
 		t2.start();
 		t3.start();
 		t4.start();
+		t1.start();
 	}
 
 	public static void main(String[] args) {
