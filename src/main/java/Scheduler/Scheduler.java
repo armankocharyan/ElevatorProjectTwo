@@ -19,6 +19,7 @@ public class Scheduler {
 	EventNotifier elevEnteredNotifier;
 
 	Queue<ElevatorMessage> queue = new LinkedList<ElevatorMessage>();
+	int processing = 0;
 
 	public Scheduler() {
 		floorListener = new EventListener(23, "FLOOR REQUEST LISTENER");
@@ -32,17 +33,18 @@ public class Scheduler {
 
 	}
 
-	public synchronized void startFloorListen() throws InterruptedException {
+	public void startFloorListen() throws InterruptedException {
 		System.out.println("SCHEDULER: Starting floor listener...");
 
 		for (;;) {
-				while (queue.size() >= 2) {
-					wait();
-				}
 				ElevatorMessage msg = floorListener.waitForNotification();
 				System.out.println("\nSCHEDULER: RECEIVED FLOOR REQUEST " + msg);
-				queue.add(msg);
-				notifyAll();
+				synchronized(this) {
+					queue.add(msg);
+					notifyAll();
+				}
+				
+				
 			}
 
 		
@@ -50,9 +52,10 @@ public class Scheduler {
 
 	public synchronized void dequeue() throws InterruptedException {
 		for (;;) {
-				while (queue.isEmpty()) {
+				while (queue.isEmpty() || processing > 1) {
 					wait();
 				}
+				processing += 1;
 				ElevatorMessage msg = queue.remove();
 				this.floorReqNotifier.sendNotif(msg.getDirection(), msg.getCurrentFloor(), msg.getMovingTo());
 				
@@ -68,6 +71,7 @@ public class Scheduler {
 			this.floorNotifier.sendNotif(msg.getDirection(), msg.getCurrentFloor(), msg.getMovingTo());
 			synchronized(this) {
 				if (msg.getMovingTo() == -1) {
+					processing -= 1;
 					notifyAll();
 				}
 			}

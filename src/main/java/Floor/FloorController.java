@@ -73,6 +73,7 @@ public class FloorController {
 		floors[0].reqUp(4);
 		Thread.sleep(30);
 		floors[2].reqUp(3);
+		floors[3].reqDown(2);
 		
 	}
 	
