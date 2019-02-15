@@ -3,16 +3,19 @@ package Elevator;
 
 import core.Button;
 import core.EventNotifier;
+import core.ElevatorMessage;
 import core.Lamp;
+import Scheduler.Scheduler;
 
 public class Elevator {
 	/* Elevator class -- ONE ELEVATOR CAR */
 	
 	int numFloors;
-	int currentFloor = 0;
-	int movingTo = 0; // our current destination floor / where we want to go. -1 if we have no destination
-	int elevatorNum;
-	int direction = 1; 
+	int onFloor = 0;
+	int[] destinationFloors = null;
+	int direction = 1;
+	
+	int carNum = -1;
 	
 	Door door;
 	Motor motor;
@@ -21,30 +24,27 @@ public class Elevator {
 	
 	EventNotifier notif;
 	
-	public Elevator(int elevatorNum, int numFloors) {
+	public Elevator(int carNum, int numFloors) {
 		this.numFloors = numFloors;
-		this.currentFloor = 0;
+		this.onFloor = 0;
 		this.direction = 1;
-		this.elevatorNum = elevatorNum;
+		this.carNum = carNum;
+		
+		this.destinationFloors = new int[numFloors];
 		
 		// notifies the scheduler listening on port 24 when the elevator has arrived on the floor
-		this.notif = new EventNotifier(24, "ELEVATOR NOTIFIER");
+		this.notif = new EventNotifier(Scheduler.PORT, "ELEVATOR");
 	}
 	
 	public int getCurrentFloor() {
-		return currentFloor;
+		return onFloor;
 	}
 	
 	public int getDirection() {
 		return direction; // 1->UP, 2->DOWN
 	}
 	
-	void announceFloor(int movingTo){
-		// sends a datagram to the scheduler saying we have arrived on a floor
-		this.notif.sendNotif(direction, currentFloor, movingTo);
-	}
-	
-	public void pickUpPerson(int floor, int dir, int movingTo) {
+	public void pickUpPerson(int floor, int dir) {
 		// floor -> the floor the person is requesting from
 		// dir -> the direction they need to go, 1-> UP, 2-> DOWN
 		// movingTo -> the floor the person wants to go to
@@ -52,74 +52,68 @@ public class Elevator {
 		// this function sends the elevator to the floor the person is on to pick them up
 		
 		try {
-			// TODO : Elevator timing
 			// THIS IS WHERE WE WOULD IMPLEMENT TIMING FROM FLOOR TO FLOOR
 			
-			int time = Math.abs(currentFloor - movingTo);
-			if(dir == 1) System.out.println("Going up to " + movingTo + " floor to pick up someone");
-			if(dir == 2) System.out.println("Going down to " + movingTo + " floor to pick up someone");
+			int time = Math.abs(onFloor - floor);
+			if(dir == 1) System.out.println("Going up to " + floor + " floor to pick up someone");
+			if(dir == 2) System.out.println("Going down to " + floor + " floor to pick up someone");
 			
 			
 			for(int i = 0; i < time; i ++) {
-				if(dir == 1) System.out.println("Current Floor " + floor ++);
-				if(dir == 2) System.out.println("Current FLoor " + floor --);
+				if(dir == 1) System.out.println("Current Floor " + onFloor ++);
+				if(dir == 2) System.out.println("Current FLoor " + onFloor --);
 				Thread.sleep(1000);
 			}
 			
-			System.out.println("We have arrived to floor " + movingTo);
+			System.out.println("We have arrived to floor " + floor);
 			Thread.sleep(2000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 		
 		// set our new current floor and direction
-		this.currentFloor = floor;
+		this.onFloor = floor;
 		this.direction = dir;
-		// set our new destination floor
-		this.movingTo = movingTo;
 		// send notification to scheduler saying that we have arrived and which floor we are going to next
-		announceFloor(movingTo);
+		this.notif.sendMessage(new ElevatorMessage(ElevatorMessage.MessageType.ELEV_PICKUP, this.carNum, this.direction, this.onFloor));
 		
 		
 		// this does nothing yet, eventually when we have the GUI it should show the doors opening
 		openDoors();
 	}
 	
-	public void rideToFloor(int dir, int movingTo) {
+	public void rideToFloor(int destination) {
 		// Called AFTER we have picked up the person at floor requesting the elevator
 		// this function moves the elevator to the floor they want to go to
-		
+		if (onFloor > destination) this.direction = 2;
+		else this.direction = 1;
 		try {
 			Thread.sleep(1000);
 			// TODO : Elevator timing
 			// THIS IS WHERE WE WOULD IMPLEMENT TIMING FROM FLOOR TO FLOOR
-			int time = Math.abs(currentFloor - movingTo);
-			int floor = currentFloor;
+			int time = Math.abs(onFloor - destination);
+			int floor = onFloor;
 			
-			if(dir == 1) System.out.println("Going up to requested floor " + movingTo);
-			if(dir == 2) System.out.println("Going down to requested floor " + movingTo);
+			if(direction == 1) System.out.println("Going up to requested floor " + destination);
+			if(direction == 2) System.out.println("Going down to requested floor " + destination);
 			
 			
 			for(int i = 0; i < time; i ++) {
-				if(dir == 1) System.out.println("Current Floor " + floor ++);
-				if(dir == 2) System.out.println("Current FLoor " + floor --);
+				if(direction == 1) System.out.println("Current Floor " + floor ++);
+				if(direction == 2) System.out.println("Current FLoor " + floor --);
 				Thread.sleep(1000);
 			}
 			
-			System.out.println("We have arrived to floor " + movingTo); 
+			System.out.println("We have arrived to floor " + destination); 
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 		// set our new current floor to the floor we want to arrive at and our direction
-		this.currentFloor = movingTo;
-		this.direction = dir;
-		
-		// set our movingTo to -1 to signal that we have no pending movements
-		this.movingTo = -1;
+		this.onFloor = destination;
 		
 		// send notification to scheduler saying that we have arrived and that we have no pending destination
-		announceFloor(-1);
+		this.notif.sendMessage(new ElevatorMessage(ElevatorMessage.MessageType.ELEV_ARRIVAL, this.carNum, this.direction, this.onFloor));
 		
 		// this does nothing yet, eventually when we have the GUI it should show the doors opening
 		openDoors();

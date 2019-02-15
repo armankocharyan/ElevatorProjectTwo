@@ -12,7 +12,7 @@ import File.ReadFile;
 
 public class FloorController {
 	
-	public static final int PORT = 62442; // IGNORE THIS, CHANGING SOON
+	public static final int PORT = 62442;
 	
 	int numFloors;
 	Floor[] floors;
@@ -28,38 +28,32 @@ public class FloorController {
 			floors[i] = new Floor(i, (i == numFloors-1), (i==0));
 		}
 		
-		// ignore this, changing soon
-		for(Floor f : floors) {
-			f.start();
-		}
-		
 		// listens for notifications from the scheduler that an elevator has arrived
-		listener = new EventListener(42424, "FLOOR ELEVATOR LISTENER");
+		listener = new EventListener(PORT, "FLOOR ELEVATOR LISTENER");
 	}
 	
 	
-	public void startElevatorListen() {
+	public void startListen() {
 		// listens for notifications from the scheduler that an elevator has arrived
 		
 		System.out.println("FLOOR CONTROLLER: Starting elevator listener...");
 		
 		for(;;) {
 			ElevatorMessage msg = listener.waitForNotification();
-			System.out.println("\nFLOOR CONTROLLER: RECEIVED ELEVATOR NOTIFICATION " + msg);
 			
-			// ELEVATOR ARRIVED ON FLOOR (msg.getCurrentFloor())
-			EventNotifier notif = new EventNotifier(floors[msg.getCurrentFloor()].getPort(), "ARRIVAL NOTIFIER");
-			
-			// ignore this, changing soon
-			notif.sendNotif(msg.getDirection(), msg.getCurrentFloor(), msg.getMovingTo());
-			
-			// if we have a destination (ie. movingTo isn't -1), then we know we have just requested the elevator
-			// so we send a message to the scheduler saying we have boarded the elevator so it can move to the destination
-			if(msg.getMovingTo() != -1) {
-				notif = new EventNotifier(25, "OCCUPANCY NOTIFIER");
-				notif.sendNotif(msg.getDirection(), msg.getCurrentFloor(), msg.getMovingTo());
+			switch(msg.getType()) {
+			case ELEV_PICKUP:
+				System.out.println("\nFLOOR CONTROLLER: RECEIVED ELEVATOR PICKUP NOTIFICATION" + msg);
+				floors[msg.getFloor()].elevArrival(msg.getDirection());
+				floors[msg.getFloor()].passengerEnter();
+				break;
+			case ELEV_ARRIVAL:
+				System.out.println("\nFLOOR CONTROLLER: RECEIVED ELEVATOR ARRIVAL NOTIFICATION" + msg);
+				floors[msg.getFloor()].elevArrival(msg.getDirection());
+				break;
+			default:
+					break;
 			}
-			
 			
 		}
 	}
@@ -68,15 +62,15 @@ public class FloorController {
 		FloorController s = this;
 		
 		// start the thread that listens for notifications from the scheduler
-		Thread t2 = new Thread(new Runnable() {
+		Thread t1 = new Thread(new Runnable() {
 			@Override
 			public void run() {
-				s.startElevatorListen();
+				s.startListen();
 			}
 		});
 		
 		
-		t2.start();
+		t1.start();
 		
 		/* THIS IS WHERE YOU WOULD CALL THE INPUT FILE METHOD */
 		//Input file

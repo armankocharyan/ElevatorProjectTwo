@@ -13,7 +13,7 @@ public class EventNotifier {
 	
 	protected InetAddress localhost;
 	int PORT;
-	String name = "EVENT NOTIFIER";
+	String name = "";
 	
 	public EventNotifier(int PORT, String name) {
 		this.PORT = PORT;
@@ -25,15 +25,8 @@ public class EventNotifier {
 			System.exit(1);
 		}
 	}
-	
-	public void sendNotif(int dir, int currFloor, int movingTo) {
-		// constructs the message
-		ElevatorMessage msg = new ElevatorMessage(dir, currFloor, movingTo);
-		sendMessage(msg);
-	}
-	
-	
-	protected void sendMessage(ElevatorMessage msg) {
+		
+	public void sendMessage(ElevatorMessage msg) {
 		try {
 			// Constructs and opens a new packet/socket 
 			

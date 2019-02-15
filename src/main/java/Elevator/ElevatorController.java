@@ -6,13 +6,13 @@ import core.EventListener;
 public class ElevatorController {
 	// Controls elevators and receives messages from the scheduler
 	
+	public static final int PORT = 69;
+	
 	Elevator[] elevators = null;
 	int numElevators = 0; // number of elevator cars
 	int numFloors; 
 	
-	
-	EventListener requestListener = null; // listens for a person pushing the elevator request button
-	EventListener occupancyListener = null; // waits for the person to get into the elevator before moving to the destination
+	EventListener messageListener = null;
 	
 	public ElevatorController(int numElevators, int numFloors) {
 		
@@ -25,38 +25,39 @@ public class ElevatorController {
 			elevators[i] = new Elevator(i, numFloors);
 		}
 		
-		
-		requestListener = new EventListener(28, "ELEVATOR REQUEST LISTENER");
-		occupancyListener= new EventListener(30, "ELEVATOR OCCUPANCY LISTENER");
+		messageListener = new EventListener(PORT, "ELEVATOR CONTROLLER");
 	}
 	
-	public void startReqListen() {
+	public void startListen() {
 		// starts a new thread/daemon that has a BLOCKING WAIT call, waits for a floor request from the scheduler
-		System.out.println("ELEVATOR: Starting request listener...");
+		System.out.println("ELEVATOR CONTROLLER: Starting message listener...");
 		
 		for(;;) {
-			ElevatorMessage msg = requestListener.waitForNotification();
-			System.out.println("\nELEVATOR: RECEIVED FLOOR REQUEST " + msg);
-			/* THIS IS WHERE WE WOULD RESPOND TO A REQUEST BY CHOOSING THE ELEVATOR,
-			 * RIGHT NOW WE JUST RESPOND WITH THE FIRST ONE */
+			ElevatorMessage msg = messageListener.waitForNotification();
 			
-			// pick up the person who requested the elevator
-			elevators[0].pickUpPerson(msg.getCurrentFloor(), msg.getDirection(), msg.getMovingTo());
+			switch(msg.getType()) {
+			case ELEV_REQUEST:
+				System.out.println("\nELEVATOR CONTROLLER: RECEIVED FLOOR REQUEST " + msg);
+				/* THIS IS WHERE WE WOULD RESPOND TO A REQUEST BY CHOOSING THE ELEVATOR,
+				 * RIGHT NOW WE JUST RESPOND WITH THE FIRST ONE */
+				
+				// pick up the person who requested the elevator
+				elevators[0].pickUpPerson(msg.getId(),msg.getDirection());
+				break;
+			case PASSENGER_ENTER:
+				System.out.println("\nELEVATOR CONTROLLER: RECEIVED PASSENGER NOTIFICATION" + msg);
+				
+				// ride to the destination
+				elevators[0].rideToFloor(msg.getRequestedFloor());
+				break;
+			default:
+				System.out.println("\nELEVATOR CONTROLLER: RECEIVED UNKNOWN NOTIFICATION " + msg);
+				break;
+			}
 		}
 	}
 	
-	public void startOccupancyListen() {
-		// starts a new thread/daemon that has a BLOCKING WAIT call, a person to get in an elevator before moving to the floor they want
-		System.out.println("ELEVATOR: Starting occupanct listener...");
-		
-		for(;;) {
-			ElevatorMessage msg = occupancyListener.waitForNotification();
-			System.out.println("\nELEVATOR: RECEIVED OCCUPANCY NOTIFICATION " + msg);
-			
-			// ride to the destination
-			elevators[0].rideToFloor(msg.getDirection(), msg.getMovingTo());
-		}
-	}
+
 	
 	public void start() {
 		ElevatorController s = this;
@@ -65,22 +66,11 @@ public class ElevatorController {
 		Thread t1 = new Thread(new Runnable() {
 			@Override
 			public void run() {
-				s.startReqListen();
+				s.startListen();
 			}
 		});
 		
-		
-		// start listening for people entering the elevator
-		Thread t2 = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				s.startOccupancyListen();
-			}
-		});
-		
-		// both run in an infinite loop
 		t1.start();
-		t2.start();
 	}
 	
 	public static void main(String[] args) {
