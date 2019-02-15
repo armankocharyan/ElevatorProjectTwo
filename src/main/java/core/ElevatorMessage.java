@@ -1,21 +1,24 @@
 package core;
 
 public class ElevatorMessage {
+	/* A message datatype to serialize/deserialize our byte string datagrams */
 	public static final int SIZE = 9;
 	public static final byte SEP = '*';
 	
-	int direction = 0; //1 -> UP, 2 -> DOWN
+	int direction = 0; // 1 -> UP, 2 -> DOWN
 	int currFloor;
 	int movingTo;
-	int car;
+	int car; // the elevator car sending/receiving the message
 	
 	byte[] msg;
 	
 	public  ElevatorMessage(int direction, int currFloor, int movingTo) {
+		// data constructor
 		this.direction = direction;
 		this.movingTo = movingTo;
 		this.currFloor = currFloor;
-		//TODO: change this
+		
+		// TODO : add car to constructor
 		this.car = 1;
 		
 		msg = new byte[9];
@@ -31,6 +34,7 @@ public class ElevatorMessage {
 	}
 	
 	public ElevatorMessage(byte[] msg) {
+		// byte string constructor
 		this.msg = msg;
 		
 		

@@ -6,10 +6,11 @@ import core.EventNotifier;
 import core.Lamp;
 
 public class Elevator {
+	/* Elevator class -- ONE ELEVATOR CAR */
 	
 	int numFloors;
 	int currentFloor = 0;
-	int movingTo = 0;
+	int movingTo = 0; // our current destination floor / where we want to go. -1 if we have no destination
 	int elevatorNum;
 	int direction = 1; 
 	
@@ -25,6 +26,8 @@ public class Elevator {
 		this.currentFloor = 0;
 		this.direction = 1;
 		this.elevatorNum = elevatorNum;
+		
+		// notifies the scheduler listening on port 24 when the elevator has arrived on the floor
 		this.notif = new EventNotifier(24, "ELEVATOR NOTIFIER");
 	}
 	
@@ -33,37 +36,74 @@ public class Elevator {
 	}
 	
 	public int getDirection() {
-		return direction;
+		return direction; // 1->UP, 2->DOWN
 	}
 	
 	void announceFloor(int movingTo){
+		// sends a datagram to the scheduler saying we have arrived on a floor
 		this.notif.sendNotif(direction, currentFloor, movingTo);
 	}
 	
-	public void rideToFloor(int floor, int dir, int movingTo) {
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		this.currentFloor = movingTo;
-		this.direction = dir;
-		this.movingTo = -1;
-		announceFloor(-1);
-	}
-	
 	public void pickUpPerson(int floor, int dir, int movingTo) {
+		// floor -> the floor the person is requesting from
+		// dir -> the direction they need to go, 1-> UP, 2-> DOWN
+		// movingTo -> the floor the person wants to go to
+		// Called when a person requests an elevator
+		// this function sends the elevator to the floor the person is on to pick them up
+		
 		try {
+			// TODO : Elevator timing
+			// THIS IS WHERE WE WOULD IMPLEMENT TIMING FROM FLOOR TO FLOOR
+			// time = abs(current floor - floor(in the parameters of the function)) * time per floor 
+			
+			// NOTE -> we may want to move this to our motor class? for instance
+			// motor.move( 3 floors ) could just pause the thread for the proper amount of time
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		// set our new current floor and direction
 		this.currentFloor = floor;
 		this.direction = dir;
+		// set our new destination floor
 		this.movingTo = movingTo;
+		// send notification to scheduler saying that we have arrived and which floor we are going to next
 		announceFloor(movingTo);
+		
+		
+		// this does nothing yet, eventually when we have the GUI it should show the doors opening
+		openDoors();
+	}
+	
+	public void rideToFloor(int dir, int movingTo) {
+		// Called AFTER we have picked up the person at floor requesting the elevator
+		// this function moves the elevator to the floor they want to go to
+		
+		try {
+			// TODO : Elevator timing
+			// THIS IS WHERE WE WOULD IMPLEMENT TIMING FROM FLOOR TO FLOOR
+			// time = abs(current floor - movingTo(in the parameters of the function)) * time per floor 
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		// set our new current floor to the floor we want to arrive at and our direction
+		this.currentFloor = movingTo;
+		this.direction = dir;
+		
+		// set our movingTo to -1 to signal that we have no pending movements
+		this.movingTo = -1;
+		
+		// send notification to scheduler saying that we have arrived and that we have no pending destination
+		announceFloor(-1);
+		
+		// this does nothing yet, eventually when we have the GUI it should show the doors opening
+		openDoors();
+	}
+	
+	void openDoors() {
+		// open the doors
 	}
 	
 	
