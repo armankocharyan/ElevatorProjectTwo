@@ -6,11 +6,13 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 
 import core.ElevatorMessage;
 import core.EventListener;
 import core.EventNotifier;
-
+import core.RequestData;
+import File.ReadFile;
 public class FloorController {
 	
 	public static final int PORT = 62442; // IGNORE THIS, CHANGING SOON
@@ -80,15 +82,35 @@ public class FloorController {
 		t2.start();
 		
 		/* THIS IS WHERE YOU WOULD CALL THE INPUT FILE METHOD */
+		//Input file
 		
-		
+		ArrayList<RequestData> inputData = ReadFile.getData("inputFile.txt");
 		// everything below this is just demo runs
 		Thread.sleep(5000);
 		
-		floors[0].reqUp(4);
+		if(inputData.get(0).goingUp()) {
+			floors[inputData.get(0).getFloorNumber()].reqUp(inputData.get(0).getfloorToGo());
+		}
+		else {
+			floors[inputData.get(0).getFloorNumber()].reqDown(inputData.get(0).getfloorToGo());
+		}
+		
+		
 		Thread.sleep(30);
-		floors[2].reqUp(3);
-		floors[3].reqDown(2);
+		
+		if(inputData.get(1).goingUp()) {
+			floors[inputData.get(1).getFloorNumber()].reqUp(inputData.get(1).getfloorToGo());
+		}
+		else {
+			floors[inputData.get(1).getFloorNumber()].reqDown(inputData.get(1).getfloorToGo());
+		}
+		
+		if(inputData.get(2).goingUp()) {
+			floors[inputData.get(2).getFloorNumber()].reqUp(inputData.get(2).getfloorToGo());
+		}
+		else {
+			floors[inputData.get(2).getFloorNumber()].reqDown(inputData.get(2).getfloorToGo());
+		}
 		
 	}
 	
