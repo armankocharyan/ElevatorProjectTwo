@@ -2,11 +2,13 @@ package core;
 
 public class RequestData {
 	
+	//global variables
 	private String time;
 	private int floorNumber;
 	private int floorToGo;
 	private boolean requestUp;
 	
+	//constructor 
 	public RequestData(String time, int floorNumber, int floorToGo, boolean requestUp) {
 		this.time = time;
 		this.floorNumber = floorNumber;
