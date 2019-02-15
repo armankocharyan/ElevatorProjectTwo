@@ -135,6 +135,13 @@ public class ElevatorMessage {
 		}
 		return data.get(0);
 	}
+	
+	public int getCarNum() {
+		if (type != MessageType.PASSENGER_ENTER) {
+			return -1;
+		}
+		return data.get(1);
+	}
 
 	public int[] getRequestedFloors() {
 		if (type != MessageType.PASSENGER_ENTER) {

@@ -24,6 +24,8 @@ public class Elevator {
 	
 	EventNotifier notif;
 	
+	boolean occupied = false;
+	
 	public Elevator(int carNum, int numFloors) {
 		this.numFloors = numFloors;
 		this.onFloor = 0;
@@ -50,6 +52,8 @@ public class Elevator {
 		// movingTo -> the floor the person wants to go to
 		// Called when a person requests an elevator
 		// this function sends the elevator to the floor the person is on to pick them up
+		System.out.println("\nPICKING UP PERSON ON FLOOR " + floor);
+		occupied = true;
 		
 		try {
 			// THIS IS WHERE WE WOULD IMPLEMENT TIMING FROM FLOOR TO FLOOR
@@ -65,7 +69,7 @@ public class Elevator {
 				Thread.sleep(1000);
 			}
 			
-			System.out.println("We have arrived to floor " + floor);
+			System.out.println("We have arrived at floor " + floor);
 			Thread.sleep(2000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
@@ -85,6 +89,8 @@ public class Elevator {
 	public void rideToFloor(int destination) {
 		// Called AFTER we have picked up the person at floor requesting the elevator
 		// this function moves the elevator to the floor they want to go to
+		
+		System.out.println("\nTAKING PERSON TO FLOOR " + destination);
 		if (onFloor > destination) this.direction = 2;
 		else this.direction = 1;
 		try {
@@ -104,7 +110,7 @@ public class Elevator {
 				Thread.sleep(1000);
 			}
 			
-			System.out.println("We have arrived to floor " + destination); 
+			System.out.println("We have arrived at floor " + destination); 
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
@@ -114,6 +120,7 @@ public class Elevator {
 		
 		// send notification to scheduler saying that we have arrived and that we have no pending destination
 		this.notif.sendMessage(new ElevatorMessage(ElevatorMessage.MessageType.ELEV_ARRIVAL, this.carNum, this.direction, this.onFloor));
+		occupied = false;
 		
 		// this does nothing yet, eventually when we have the GUI it should show the doors opening
 		openDoors();
@@ -121,6 +128,10 @@ public class Elevator {
 	
 	void openDoors() {
 		// open the doors
+	}
+	
+	public boolean isOccupied() {
+		return occupied;
 	}
 	
 	

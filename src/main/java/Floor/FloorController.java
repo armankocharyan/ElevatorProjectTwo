@@ -43,13 +43,13 @@ public class FloorController {
 			
 			switch(msg.getType()) {
 			case ELEV_PICKUP:
-				System.out.println("\nFLOOR CONTROLLER: RECEIVED ELEVATOR PICKUP NOTIFICATION" + msg);
-				floors[msg.getFloor()].elevArrival(msg.getDirection());
-				floors[msg.getFloor()].passengerEnter();
+				System.out.println("\nFLOOR CONTROLLER: RECEIVED FLOOR " + msg.getFloor() + " ELEVATOR PICKUP NOTIFICATION" + msg);
+				floors[msg.getFloor()].elevArrival(msg.getDirection(), msg.getId());
+				floors[msg.getFloor()].passengerEnter(msg.getId());
 				break;
 			case ELEV_ARRIVAL:
-				System.out.println("\nFLOOR CONTROLLER: RECEIVED ELEVATOR ARRIVAL NOTIFICATION" + msg);
-				floors[msg.getFloor()].elevArrival(msg.getDirection());
+				System.out.println("\nFLOOR CONTROLLER: RECEIVED FLOOR " + msg.getFloor() + "ELEVATOR ARRIVAL NOTIFICATION" + msg);
+				floors[msg.getFloor()].elevArrival(msg.getDirection(), msg.getId());
 				break;
 			default:
 					break;
@@ -103,10 +103,17 @@ public class FloorController {
 			floors[inputData.get(2).getFloorNumber()].reqDown(inputData.get(2).getfloorToGo());
 		}
 		
+		if(inputData.get(3).goingUp()) {
+			floors[inputData.get(3).getFloorNumber()].reqUp(inputData.get(3).getfloorToGo());
+		}
+		else {
+			floors[inputData.get(3).getFloorNumber()].reqDown(inputData.get(3).getfloorToGo());
+		}
+		
 	}
 	
 	public static void main(String[] args) {
-		FloorController c = new FloorController(5);
+		FloorController c = new FloorController(8);
 		try {
 			c.start();
 		} catch (InterruptedException e) {

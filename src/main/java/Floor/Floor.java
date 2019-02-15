@@ -52,6 +52,8 @@ public class Floor{
 		// num -> floor we want to go to
 		// send request from floor (this.floorNum) to floor num
 		
+		System.out.println("\nFLOOR "+ floorNum + " REQUESTED AN ELEVATOR GOING UP");
+		
 		if (highestFloor) {
 			// highest floors can't go up
 			throw new IllegalStateException();
@@ -69,6 +71,8 @@ public class Floor{
 	public void reqDown(int num) {
 		// num -> floor we want to go to
 		// send request from floor (this.floorNum) to floor num
+		
+		System.out.println("\nFLOOR "+ floorNum + " REQUESTED AN ELEVATOR GOING DOWN");
 		if (lowestFloor) {
 			// lowest floors can't go down
 			throw new IllegalStateException();
@@ -99,8 +103,8 @@ public class Floor{
 		}
 	}
 	
-	public void elevArrival(int direction) {
-		System.out.println("FLOOR " + floorNum + " ELEVATOR ARRIVAL.");
+	public void elevArrival(int direction, int carNum) {
+		System.out.println("\nFLOOR " + floorNum + " ELEVATOR CAR "+ carNum + " ARRIVAL.");
 		if (direction == 1) {
 			resetUpBtn();
 			directionLampUp.setOn(true);
@@ -113,11 +117,13 @@ public class Floor{
 		}
 	}
 	
-	public void passengerEnter() {
+	public void passengerEnter(int carNum) {
 		if(requestFloor == -1) {
 			return;
 		}
-		this.notifier.sendMessage(new ElevatorMessage(ElevatorMessage.MessageType.PASSENGER_ENTER, this.floorNum, this.requestFloor));
+		System.out.println("\nPASSENGER ON FLOOR "+ floorNum + " ENTERED ELEVATOR CAR " + carNum + " TO FLOOR " + requestFloor);
+		
+		this.notifier.sendMessage(new ElevatorMessage(ElevatorMessage.MessageType.PASSENGER_ENTER, this.floorNum, this.requestFloor, carNum));
 		this.requestFloor = -1;
 	}
 }

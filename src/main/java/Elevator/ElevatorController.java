@@ -37,18 +37,25 @@ public class ElevatorController {
 			
 			switch(msg.getType()) {
 			case ELEV_REQUEST:
-				System.out.println("\nELEVATOR CONTROLLER: RECEIVED FLOOR REQUEST " + msg);
+				System.out.println("\nELEVATOR CONTROLLER: RECEIVED ELEVATOR REQUEST NOTIFICATION" + msg);
 				/* THIS IS WHERE WE WOULD RESPOND TO A REQUEST BY CHOOSING THE ELEVATOR,
 				 * RIGHT NOW WE JUST RESPOND WITH THE FIRST ONE */
 				
 				// pick up the person who requested the elevator
-				elevators[0].pickUpPerson(msg.getId(),msg.getDirection());
+				
+				for(Elevator elevator : elevators) {
+					if (elevator.isOccupied()) continue;
+					elevator.pickUpPerson(msg.getId(),msg.getDirection());
+					break;
+				}
+				
 				break;
 			case PASSENGER_ENTER:
-				System.out.println("\nELEVATOR CONTROLLER: RECEIVED PASSENGER NOTIFICATION" + msg);
+				System.out.println("\nELEVATOR CONTROLLER: RECEIVED PASSENGER ENTERED NOTIFICATION" + msg);
 				
+				int car = msg.getCarNum();
 				// ride to the destination
-				elevators[0].rideToFloor(msg.getRequestedFloor());
+				elevators[car].rideToFloor(msg.getRequestedFloor());
 				break;
 			default:
 				System.out.println("\nELEVATOR CONTROLLER: RECEIVED UNKNOWN NOTIFICATION " + msg);
@@ -74,7 +81,7 @@ public class ElevatorController {
 	}
 	
 	public static void main(String[] args) {
-		ElevatorController c = new ElevatorController(1, 5);
+		ElevatorController c = new ElevatorController(2, 8);
 		c.start();
 	}
 	

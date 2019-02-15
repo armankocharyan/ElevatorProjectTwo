@@ -23,11 +23,13 @@ public class Scheduler {
 	Queue<ElevatorMessage> queue = new LinkedList<ElevatorMessage>(); // our queue of requests
 	int processing = 0; // if this is > 0, we have an elevator moving to a floor to respond to a
 						// request. 1 = 1 car occupied, 2 = both cars occupied, etc.
+	int numCars = 0;
 
-	public Scheduler() {
+	public Scheduler(int numCars) {
 		listener = new EventListener(PORT, "SCHEDULER LISTENER");
 		elevatorNotifier = new EventNotifier(ElevatorController.PORT, "SCHEDULER ELEVATOR NOTIFIER");
 		floorNotifier = new EventNotifier(FloorController.PORT, "SCHEDULER FLOOR NOTIFIER");
+		this.numCars = numCars;
 	}
 
 	public void startListen() throws InterruptedException {
@@ -73,7 +75,7 @@ public class Scheduler {
 	public synchronized void dequeue() throws InterruptedException {
 		// THIS ACTS AS A CONSUMER
 		for (;;) {
-			while (queue.isEmpty() || processing >= 1) {
+			while (queue.isEmpty() || processing >= numCars) {
 				// WAIT while our queue is empty OR while all cars are occupied (processing >=
 				// numCars)
 				wait();
@@ -84,7 +86,8 @@ public class Scheduler {
 
 			// get the request and remove it from the queue
 			ElevatorMessage msg = queue.remove();
-
+			
+			
 			// send notification to elevatorController that someone has requested a car
 			this.elevatorNotifier.sendMessage(msg);
 		}
@@ -125,7 +128,7 @@ public class Scheduler {
 	}
 
 	public static void main(String[] args) {
-		Scheduler s = new Scheduler();
+		Scheduler s = new Scheduler(2);
 		s.start();
 	}
 
