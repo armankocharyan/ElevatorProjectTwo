@@ -54,11 +54,20 @@ public class Elevator {
 		try {
 			// TODO : Elevator timing
 			// THIS IS WHERE WE WOULD IMPLEMENT TIMING FROM FLOOR TO FLOOR
-			// time = abs(current floor - floor(in the parameters of the function)) * time per floor 
 			
-			// NOTE -> we may want to move this to our motor class? for instance
-			// motor.move( 3 floors ) could just pause the thread for the proper amount of time
-			Thread.sleep(1000);
+			int time = Math.abs(currentFloor - movingTo);
+			if(dir == 1) System.out.println("Going up to " + movingTo + " floor to pick up someone");
+			if(dir == 2) System.out.println("Going down to " + movingTo + " floor to pick up someone");
+			
+			
+			for(int i = 0; i < time; i ++) {
+				if(dir == 1) System.out.println("Current Floor " + floor ++);
+				if(dir == 2) System.out.println("Current FLoor " + floor --);
+				Thread.sleep(1000);
+			}
+			
+			System.out.println("We have arrived to floor " + movingTo);
+			Thread.sleep(2000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -81,9 +90,23 @@ public class Elevator {
 		// this function moves the elevator to the floor they want to go to
 		
 		try {
+			Thread.sleep(1000);
 			// TODO : Elevator timing
 			// THIS IS WHERE WE WOULD IMPLEMENT TIMING FROM FLOOR TO FLOOR
-			// time = abs(current floor - movingTo(in the parameters of the function)) * time per floor 
+			int time = Math.abs(currentFloor - movingTo);
+			int floor = currentFloor;
+			
+			if(dir == 1) System.out.println("Going up to requested floor " + movingTo);
+			if(dir == 2) System.out.println("Going down to requested floor " + movingTo);
+			
+			
+			for(int i = 0; i < time; i ++) {
+				if(dir == 1) System.out.println("Current Floor " + floor ++);
+				if(dir == 2) System.out.println("Current FLoor " + floor --);
+				Thread.sleep(1000);
+			}
+			
+			System.out.println("We have arrived to floor " + movingTo); 
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
