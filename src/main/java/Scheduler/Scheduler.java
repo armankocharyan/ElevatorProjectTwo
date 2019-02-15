@@ -26,14 +26,17 @@ public class Scheduler {
 	public Scheduler() {
 		floorListener = new EventListener(23, "FLOOR REQUEST LISTENER");
 		floorReqNotifier = new EventNotifier(28, "ELEVATOR REQUEST NOTIFIER");
-
+	
 		elevListener = new EventListener(24, "ELEVATOR LISTENER");
 		floorNotifier = new EventNotifier(42424, "SCHEDULER ELEVATOR NOTIFIER");
-
+	
 		elevEnteredListener = new EventListener(25, "ELEVATOR OCCUPANCY LISTENER");
 		elevEnteredNotifier = new EventNotifier(30, "ELEVATOR OCCUPANCY NOTIFIER");
-
+	
 	}
+
+
+
 
 	
 	public void startFloorListen() throws InterruptedException {
