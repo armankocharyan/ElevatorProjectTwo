@@ -68,6 +68,10 @@ public class FloorController {
 		
 		t2.start();
 		
+		/* THIS IS WHERE YOU WOULD CALL THE INPUT FILE METHOD */
+		
+		
+		// everything below this is just demo runs
 		Thread.sleep(5000);
 		
 		floors[0].reqUp(4);
