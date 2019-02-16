@@ -14,6 +14,7 @@ public class FloorController {
 	
 	public static final int PORT = 62442;
 	
+	
 	int numFloors;
 	Floor[] floors;
 	

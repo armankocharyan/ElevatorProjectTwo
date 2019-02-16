@@ -13,7 +13,7 @@ public class Floor{
 	int floorNum = -1;	
 	boolean highestFloor = false;  // highest floors have no up requests
 	boolean lowestFloor = false;  // lowest floors have no down requests
-	
+	public static final String floorTestLogFileName = "TestLogs/floor.testing";
 	EventNotifier notifier = null; // notifies the scheduler that we requested an elevator
 	
 	Button reqBtnUp = null; 
@@ -53,7 +53,7 @@ public class Floor{
 		// send request from floor (this.floorNum) to floor num
 		
 		System.out.println("\nFLOOR "+ floorNum + " REQUESTED AN ELEVATOR GOING UP");
-		
+		Logger.Logger.write("\nFLOOR "+ floorNum + " REQUESTED AN ELEVATOR GOING UP", floorTestLogFileName);
 		if (highestFloor) {
 			// highest floors can't go up
 			throw new IllegalStateException();
@@ -73,6 +73,7 @@ public class Floor{
 		// send request from floor (this.floorNum) to floor num
 		
 		System.out.println("\nFLOOR "+ floorNum + " REQUESTED AN ELEVATOR GOING DOWN");
+		Logger.Logger.write("\nFLOOR "+ floorNum + " REQUESTED AN ELEVATOR GOING DOWN", floorTestLogFileName);
 		if (lowestFloor) {
 			// lowest floors can't go down
 			throw new IllegalStateException();
@@ -105,6 +106,7 @@ public class Floor{
 	
 	public void elevArrival(int direction, int carNum) {
 		System.out.println("\nFLOOR " + floorNum + " ELEVATOR CAR "+ carNum + " ARRIVAL.");
+		Logger.Logger.write("\nFLOOR " + floorNum + " ELEVATOR CAR "+ carNum + " ARRIVAL.", floorTestLogFileName);
 		if (direction == 1) {
 			resetUpBtn();
 			directionLampUp.setOn(true);
@@ -122,7 +124,7 @@ public class Floor{
 			return;
 		}
 		System.out.println("\nPASSENGER ON FLOOR "+ floorNum + " ENTERED ELEVATOR CAR " + carNum + " TO FLOOR " + requestFloor);
-		
+		Logger.Logger.write("\nPASSENGER ON FLOOR "+ floorNum + " ENTERED ELEVATOR CAR " + carNum + " TO FLOOR " + requestFloor, floorTestLogFileName);
 		this.notifier.sendMessage(new ElevatorMessage(ElevatorMessage.MessageType.PASSENGER_ENTER, this.floorNum, this.requestFloor, carNum));
 		this.requestFloor = -1;
 	}

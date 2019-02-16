@@ -80,6 +80,11 @@ public class ElevatorController {
 		t1.start();
 	}
 	
+	public static void runElevator() {
+		ElevatorController c = new ElevatorController(2, 8);
+		c.start();
+	}
+	
 	public static void main(String[] args) {
 		ElevatorController c = new ElevatorController(2, 8);
 		c.start();

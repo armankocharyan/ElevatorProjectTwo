@@ -4,6 +4,8 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 
+import Floor.FloorController;
+
 public class Logger {
     // THIS CLASS HAS STATIC METHODS THAT ARE CALLED TO LOG DATA FOR TESTING REASON
 	
@@ -38,16 +40,13 @@ public class Logger {
 	
 	//clears all the text from the logs
 	public static void clearAllTextFiles() {
-		Logger.clearText("elevator.receive.testing");
-		Logger.clearText("elevator.response.testing");
-		Logger.clearText("floor.receive.testing");
-		Logger.clearText("floor.send.testing");
-		Logger.clearText("scheduler.receive.testing");
-		Logger.clearText("scheduler.forward.testing");
-		Logger.clearText("scheduler.send.testing");
+		Logger.clearText("TestLogs/elevator.testing");
+		Logger.clearText("TestLogs/scheduler.testing");
+		Logger.clearText("TestLogs/floor.testing");
 	}
 	
-	
-	
+	public static void main(String[] args) {
+		Logger.write("asdfasdfafd", "TestLogs/test.testing");
+	}
 	
 }

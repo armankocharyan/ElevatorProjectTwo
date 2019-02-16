@@ -15,7 +15,7 @@ public class Scheduler {
 	public static final int PORT = 24;
 
 	EventListener listener;
-
+	public static final String schedulerTestLogFileName = "TestLogs/scheduler.testing";
 	EventNotifier elevatorNotifier;
 	EventNotifier floorNotifier;
 
@@ -35,7 +35,7 @@ public class Scheduler {
 	public void startListen() throws InterruptedException {
 		// THIS ACTS AS A PRODUCER
 		System.out.println("SCHEDULER: Starting listener...");
-
+		Logger.Logger.write("SCHEDULER: Starting listener...", schedulerTestLogFileName);
 		for (;;) {
 			ElevatorMessage msg = listener.waitForNotification();
 			switch (msg.getType()) {

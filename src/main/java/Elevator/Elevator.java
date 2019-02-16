@@ -10,6 +10,8 @@ import Scheduler.Scheduler;
 public class Elevator {
 	/* Elevator class -- ONE ELEVATOR CAR */
 	
+	public static final String elevatorTestLogFileName = "TestLogs/elevator.testing";
+	
 	int numFloors;
 	int onFloor = 0;
 	int[] destinationFloors = null;
@@ -53,6 +55,7 @@ public class Elevator {
 		// Called when a person requests an elevator
 		// this function sends the elevator to the floor the person is on to pick them up
 		System.out.println("\nPICKING UP PERSON ON FLOOR " + floor);
+		Logger.Logger.write("\nPICKING UP PERSON ON FLOOR " + floor, elevatorTestLogFileName );
 		occupied = true;
 		
 		try {
@@ -91,6 +94,7 @@ public class Elevator {
 		// this function moves the elevator to the floor they want to go to
 		
 		System.out.println("\nTAKING PERSON TO FLOOR " + destination);
+		Logger.Logger.write("\nTAKING PERSON TO FLOOR " + destination, elevatorTestLogFileName );
 		if (onFloor > destination) this.direction = 2;
 		else this.direction = 1;
 		try {
