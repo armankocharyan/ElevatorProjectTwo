@@ -5,20 +5,16 @@ import core.ElevatorMessage;
 import core.EventListener;
 import core.EventNotifier;
 import core.Lamp;
+import Scheduler.Scheduler;
 
 public class Floor{
 	
-	public static int NEXT_PORT = 62442;  // ignore this im getting rid of it tmo
-	
-	int port = -1; // ignore this, same thing
 	
 	int floorNum = -1;	
 	boolean highestFloor = false;  // highest floors have no up requests
 	boolean lowestFloor = false;  // lowest floors have no down requests
 	
-	EventListener arrivalSensor = null; // our arrival sensor is just a receiving socket
 	EventNotifier notifier = null; // notifies the scheduler that we requested an elevator
-	EventNotifier occupancyNotifier = null; // notifies the scheduler that we entered an elevator and are ready to go to the floor we want
 	
 	Button reqBtnUp = null; 
 	Button reqBtnDown = null;
@@ -29,6 +25,7 @@ public class Floor{
 	Lamp directionLampUp = null;
 	Lamp directionLampDown = null;
 	
+	int requestFloor = -1;
 	
 	public Floor(int num, boolean highestFloor, boolean lowestFloor) {
 		this.floorNum = num;
@@ -37,66 +34,57 @@ public class Floor{
 		
 		// buttons, button lamps, and direction lamps
 		if(!highestFloor) {
-			String btnString = "Floor " + floorNum + " Request UP btn";
-			String lampString = "Floor " + floorNum + " Request UP lamp";
-			reqBtnUp = new Button(btnString, true);
-			reqLampUp = new Lamp(lampString,false);
+			reqBtnUp = new Button("Floor " + floorNum + " Request UP btn", true);
+			reqLampUp = new Lamp("Floor " + floorNum + " Request UP lamp",false);
 		}
 		if(!lowestFloor) {
-			String btnString = "Floor " + floorNum + " Request DOWN btn";
-			String lampString = "Floor " + floorNum + " Request DOWN lamp";
-			reqBtnDown = new Button(btnString, true);
-			reqLampDown = new Lamp(lampString,false);
+			reqBtnDown = new Button("Floor " + floorNum + " Request DOWN btn", true);
+			reqLampDown = new Lamp("Floor " + floorNum + " Request DOWN lamp",false);
 		}
-		String btnString = "Floor " + floorNum + " direction UP lamp";
-		this.directionLampUp = new Lamp(btnString, false);
-		btnString = "Floor " + floorNum + " direction DOWN lamp";
-		this.directionLampDown = new Lamp(btnString, false);
+		this.directionLampUp = new Lamp("Floor " + floorNum + " direction UP lamp", false);
+		this.directionLampDown = new Lamp("Floor " + floorNum + " direction DOWN lamp", false);
 		
 		
-		// ignore this
-		this.port = NEXT_PORT++;
-		
-		// event listeners/notifiers initialization
-		this.arrivalSensor = new EventListener(this.port, "ARRIVAL SENSOR");
-		this.notifier = new EventNotifier(23, "FLOOR NOTIFIER");
-		this.occupancyNotifier = new EventNotifier(24, "OCCUPANCY NOTIFIER");
+		this.notifier = new EventNotifier(Scheduler.PORT, "FLOOR NOTIFIER");
 	}
 	
 	public void reqUp(int num) {
 		// num -> floor we want to go to
 		// send request from floor (this.floorNum) to floor num
 		
+		System.out.println("\nFLOOR "+ floorNum + " REQUESTED AN ELEVATOR GOING UP");
+		
 		if (highestFloor) {
 			// highest floors can't go up
 			throw new IllegalStateException();
 		}
 		
+		requestFloor = num;
 		// turn on button lamp and press the button
 		reqLampUp.setOn(true);
 		reqBtnUp.setPressed(true);
 		
 		// send notification to scheduler
-		this.notifier.sendNotif(1, floorNum, num);
-		
-	
+		this.notifier.sendMessage(new ElevatorMessage(ElevatorMessage.MessageType.ELEV_REQUEST, this.floorNum, 1));
 	}
 	
 	public void reqDown(int num) {
 		// num -> floor we want to go to
 		// send request from floor (this.floorNum) to floor num
+		
+		System.out.println("\nFLOOR "+ floorNum + " REQUESTED AN ELEVATOR GOING DOWN");
 		if (lowestFloor) {
 			// lowest floors can't go down
 			throw new IllegalStateException();
 		}
 		
+		requestFloor = num;
 		// turn on button lamp and press the button
 		reqLampDown.setOn(true);
 		reqBtnDown.setPressed(true);
 		
 		
-		this.notifier.sendNotif(2, floorNum, num);
-		
+		this.notifier.sendMessage(new ElevatorMessage(ElevatorMessage.MessageType.ELEV_REQUEST, this.floorNum, 2));
 	}
 	
 	public void resetDownBtn() {
@@ -105,7 +93,6 @@ public class Floor{
 			reqLampDown.setOn(false);
 			reqBtnDown.setPressed(false);
 		}
-		
 	}
 	
 	public void resetUpBtn() {
@@ -114,44 +101,29 @@ public class Floor{
 			reqLampUp.setOn(false);
 			reqBtnUp.setPressed(false);
 		}
-		
 	}
 	
-	public void listen() {
-		// IGNORE THIS, CHANGING THIS SOON
-		System.out.println("FLOOR "+floorNum+": Starting arrival sensor...");
-		
-		for(;;) {
-			ElevatorMessage msg = arrivalSensor.waitForNotification();
-			System.out.println("\nFLOOR " + floorNum + ": ELEVATOR ARRIVED. " + msg);
-			if (msg.getDirection() == 1) {
-				resetUpBtn();
-				directionLampUp.setOn(true);
-				directionLampDown.setOn(false);
-			}
-			else {
-				resetDownBtn();
-				directionLampUp.setOn(false);
-				directionLampDown.setOn(true);
-			}
+	public void elevArrival(int direction, int carNum) {
+		System.out.println("\nFLOOR " + floorNum + " ELEVATOR CAR "+ carNum + " ARRIVAL.");
+		if (direction == 1) {
+			resetUpBtn();
+			directionLampUp.setOn(true);
+			directionLampDown.setOn(false);
+		}
+		else {
+			resetDownBtn();
+			directionLampUp.setOn(false);
+			directionLampDown.setOn(true);
 		}
 	}
 	
-	public void start() {
-		Floor floor = this;
-		Thread t = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				floor.listen();
-			}
-		});
-		t.start();
+	public void passengerEnter(int carNum) {
+		if(requestFloor == -1) {
+			return;
+		}
+		System.out.println("\nPASSENGER ON FLOOR "+ floorNum + " ENTERED ELEVATOR CAR " + carNum + " TO FLOOR " + requestFloor);
+		
+		this.notifier.sendMessage(new ElevatorMessage(ElevatorMessage.MessageType.PASSENGER_ENTER, this.floorNum, this.requestFloor, carNum));
+		this.requestFloor = -1;
 	}
-	
-	
-	int getPort() {
-		return this.port;
-	}
-	
-	
 }
