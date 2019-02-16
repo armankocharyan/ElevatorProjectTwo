@@ -13,7 +13,6 @@ public class Button {
 	}
 	
 	public void setPressed(boolean pressed) {
-		
 		this.pressed = pressed;
 		if (pressed) System.out.println(name+" PRESSED.");
 		else System.out.println(name+" UNPRESSED.");

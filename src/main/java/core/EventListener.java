@@ -5,16 +5,21 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 
+/**
+ * EventListener opens a socket on a given port and listens until it 
+ * receives a message. When put in an infinite loop, it acts as a simple
+ * server.
+ *
+ */
 public class EventListener {
-	/* This class will block & wait for a notification on port PORT */
-
+	
+	// -- INSTANCE VARIABLES -- //
+	int PORT;
+	String name = "";
 	protected DatagramPacket recvPacket;
 	protected DatagramSocket recvSocket;
 	
-	int PORT;
-	
-	public static String name = "EVENT LISTENER";
-	
+	// -- CONSTRUCTOR -- //
 	public EventListener(int PORT, String name) {
 		this.PORT = PORT;
 		try {
@@ -24,6 +29,14 @@ public class EventListener {
 		}
 	}
 	
+	/**
+	 * Performs a blocking wait call until it receives a message on
+	 * the instance's port. Should be called in a separate thread
+	 * so as not to halt the program.
+	 * 
+	 * @return ElevatorMessage the message we received, packaged into
+	 * 						   a convenient class.
+	 */
 	public ElevatorMessage waitForNotification() {
 		// waits on the receiving socket for a message
 		

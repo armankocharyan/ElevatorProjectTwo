@@ -3,6 +3,7 @@ package Elevator;
 import core.ElevatorMessage;
 import core.EventListener;
 
+// TODO : ElevatorController documentation
 public class ElevatorController {
 	// Controls elevators and receives messages from the scheduler
 	

@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
 
-import Scheduler.Scheduler;
 import core.RequestData;
 //This class holds static methods that parse the input file
 public class ReadFile {

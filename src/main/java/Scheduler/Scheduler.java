@@ -10,6 +10,7 @@ import core.EventNotifier;
 import Floor.FloorController;
 import Elevator.ElevatorController;
 
+// TODO : Scheduler documentation
 public class Scheduler {
 
 	public static final int PORT = 24;
@@ -19,7 +20,7 @@ public class Scheduler {
 	EventNotifier elevatorNotifier;
 	EventNotifier floorNotifier;
 
-	// everything below this wont
+
 	Queue<ElevatorMessage> queue = new LinkedList<ElevatorMessage>(); // our queue of requests
 	int processing = 0; // if this is > 0, we have an elevator moving to a floor to respond to a
 						// request. 1 = 1 car occupied, 2 = both cars occupied, etc.

@@ -2,16 +2,14 @@ package Floor;
 
 import core.ElevatorMessage;
 import core.EventListener;
-import core.EventNotifier;
 import core.RequestData;
 
 import java.util.ArrayList;
 
 import File.ReadFile;
 
-
+// TODO : FloorController documentation
 public class FloorController {
-	
 	public static final int PORT = 62442;
 	
 	
@@ -49,7 +47,7 @@ public class FloorController {
 				floors[msg.getFloor()].passengerEnter(msg.getId());
 				break;
 			case ELEV_ARRIVAL:
-				System.out.println("\nFLOOR CONTROLLER: RECEIVED FLOOR " + msg.getFloor() + "ELEVATOR ARRIVAL NOTIFICATION" + msg);
+				System.out.println("\nFLOOR CONTROLLER: RECEIVED FLOOR " + msg.getFloor() + " ELEVATOR ARRIVAL NOTIFICATION" + msg);
 				floors[msg.getFloor()].elevArrival(msg.getDirection(), msg.getId());
 				break;
 			default:
@@ -73,8 +71,8 @@ public class FloorController {
 		
 		t1.start();
 		
-		/* THIS IS WHERE YOU WOULD CALL THE INPUT FILE METHOD */
 		//Input file
+		//TODO : make input file repeatable
 		
 		ArrayList<RequestData> inputData = ReadFile.getData("inputFile.txt");
 		// everything below this is just demo runs

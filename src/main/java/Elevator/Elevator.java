@@ -1,59 +1,73 @@
 package Elevator;
 
-
 import core.Button;
 import core.EventNotifier;
 import core.ElevatorMessage;
 import core.Lamp;
 import Scheduler.Scheduler;
 
+/**
+ * Represents a single elevator car connected to our ElevatorController. This class
+ * tracks where our car is at any point in time and notifies our scheduler when it has 
+ * arrived at a floor. 
+ */
 public class Elevator {
-	/* Elevator class -- ONE ELEVATOR CAR */
-	
+	// -- STATIC VARIABLES -- //
 	public static final String elevatorTestLogFileName = "TestLogs/elevator.testing";
 	
+	// -- INSTANCE VARIABLES -- //
 	int numFloors;
 	int onFloor = 0;
 	int[] destinationFloors = null;
 	int direction = 1;
-	
 	int carNum = -1;
+	boolean occupied = false;
+	EventNotifier notif;
 	
+	// TODO : populate and implement our doors/motors/buttons/lamps in our Elevators
 	Door door;
 	Motor motor;
 	Lamp[] floorLamps;
 	Button[] floorBtns;
 	
-	EventNotifier notif;
-	
-	boolean occupied = false;
-	
+	// -- CONSTRUCTOR -- //
 	public Elevator(int carNum, int numFloors) {
 		this.numFloors = numFloors;
 		this.onFloor = 0;
 		this.direction = 1;
 		this.carNum = carNum;
-		
 		this.destinationFloors = new int[numFloors];
-		
-		// notifies the scheduler listening on port 24 when the elevator has arrived on the floor
 		this.notif = new EventNotifier(Scheduler.PORT, "ELEVATOR");
 	}
 	
+	// -- GETTERS -- //
 	public int getCurrentFloor() {
 		return onFloor;
 	}
 	
+	/**
+     * Getter for the elevator car's direction.
+     * 
+	 * @return 1 if direction is UP, 2 if direction is DOWN 
+	 */
 	public int getDirection() {
 		return direction; // 1->UP, 2->DOWN
 	}
 	
+	public boolean isOccupied() {
+		return occupied;
+	}
+	
+	/**
+	 * This is called when a floor opens a request for an elevator
+	 * and this car is chosen to service the request. It will 
+	 * move the elevator to the floor over a period of time and 
+	 * send a notification to the scheduler when it has arrived.
+	 * 
+	 * @param floor the floor that has called the elevator.
+	 * @param dir the direction requested.
+	 */
 	public void pickUpPerson(int floor, int dir) {
-		// floor -> the floor the person is requesting from
-		// dir -> the direction they need to go, 1-> UP, 2-> DOWN
-		// movingTo -> the floor the person wants to go to
-		// Called when a person requests an elevator
-		// this function sends the elevator to the floor the person is on to pick them up
 		System.out.println("\nPICKING UP PERSON ON FLOOR " + floor);
 		Logger.Logger.write("\nPICKING UP PERSON ON FLOOR " + floor, elevatorTestLogFileName );
 		occupied = true;
@@ -89,10 +103,14 @@ public class Elevator {
 		openDoors();
 	}
 	
+	/**
+	 * This is called when a passenger has entered the elevator and chosen 
+	 * a floor to ride to. This will move our elevator to the floor requested
+	 * over a period of time and notify the scheduler when it has arrived.
+	 * 
+	 * @param destination the floor we need to ride to.
+	 */
 	public void rideToFloor(int destination) {
-		// Called AFTER we have picked up the person at floor requesting the elevator
-		// this function moves the elevator to the floor they want to go to
-		
 		System.out.println("\nTAKING PERSON TO FLOOR " + destination);
 		Logger.Logger.write("\nTAKING PERSON TO FLOOR " + destination, elevatorTestLogFileName );
 		if (onFloor > destination) this.direction = 2;
@@ -134,9 +152,7 @@ public class Elevator {
 		// open the doors
 	}
 	
-	public boolean isOccupied() {
-		return occupied;
-	}
+
 	
 	
 }

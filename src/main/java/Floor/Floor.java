@@ -2,18 +2,19 @@ package Floor;
 
 import core.Button;
 import core.ElevatorMessage;
-import core.EventListener;
 import core.EventNotifier;
 import core.Lamp;
 import Scheduler.Scheduler;
-
+ 
+// TODO : Floor documentation
 public class Floor{
-	
+	// -- STATIC VARIABLES -- //
+	public static final String floorTestLogFileName = "TestLogs/floor.testing";
 	
 	int floorNum = -1;	
 	boolean highestFloor = false;  // highest floors have no up requests
 	boolean lowestFloor = false;  // lowest floors have no down requests
-	public static final String floorTestLogFileName = "TestLogs/floor.testing";
+	
 	EventNotifier notifier = null; // notifies the scheduler that we requested an elevator
 	
 	Button reqBtnUp = null; 
@@ -125,7 +126,7 @@ public class Floor{
 		}
 		System.out.println("\nPASSENGER ON FLOOR "+ floorNum + " ENTERED ELEVATOR CAR " + carNum + " TO FLOOR " + requestFloor);
 		Logger.Logger.write("\nPASSENGER ON FLOOR "+ floorNum + " ENTERED ELEVATOR CAR " + carNum + " TO FLOOR " + requestFloor, floorTestLogFileName);
-		this.notifier.sendMessage(new ElevatorMessage(ElevatorMessage.MessageType.PASSENGER_ENTER, this.floorNum, this.requestFloor, carNum));
+		this.notifier.sendMessage(new ElevatorMessage(ElevatorMessage.MessageType.PASSENGER_ENTER, this.floorNum, carNum, this.requestFloor));
 		this.requestFloor = -1;
 	}
 }

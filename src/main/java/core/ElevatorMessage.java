@@ -2,13 +2,15 @@ package core;
 
 import java.util.ArrayList;
 
+/**
+ * ElevatorMessage is the default message class for all UDP messages to and from our
+ * three subsystems (Floors, Elevators, and the Scheduler). Supports up to 96
+ * int parameters as extra information and conversion between byte strings and 
+ * class instances.
+ */
 public class ElevatorMessage {
-
-	public static final int MAX_ARGS = 96; // max allowed arguments to the message
-	public static final int SIZE = 100; // message bytestring length
-
-	static byte SEP = '*';
-
+	
+	
 	public enum MessageType {
 		ELEV_REQUEST('0'), PASSENGER_ENTER('1'), ELEV_PICKUP('2'), ELEV_ARRIVAL('3');
 
@@ -41,19 +43,26 @@ public class ElevatorMessage {
 			return ret;
 		}
 	}
+	
+	// -- STATIC VARIABLES -- //
+	public static final int MAX_ARGS = 96; 
+	public static final int SIZE = 100; 
+	static byte SEP = '*';
 
+	// -- INSTANCE VARIABLES -- //
 	MessageType type = null;
 	int id = 0;
 	ArrayList<Integer> data = new ArrayList<Integer>();
 	byte[] msg = new byte[SIZE];
 
 	/**
-	 * Creates an ElevatorMessage from parameters
+	 * Creates an ElevatorMessage from parameters.
 	 * 
-	 * @param type       the message type
+	 * @param type       one of ELEV_REQUEST, PASSENGER_ENTER, ELEV_PICKUP, ELEV_ARRIVAL.
 	 * @param id         the id (floor number or car number) of the object sending
-	 *                   the message
-	 * @param parameters an arbitrarily long list of message data
+	 *                   the message.
+	 * @param parameters an arbitrarily long list of message data (direction, 
+	 * 					 floor requested, etc.)
 	 */
 	public ElevatorMessage(MessageType type, int id, int... args) {
 		if (args.length > MAX_ARGS) {
@@ -71,9 +80,9 @@ public class ElevatorMessage {
 	}
 
 	/**
-	 * Constructs a message from a byte array
+	 * Constructs a message from a byte array.
 	 * 
-	 * @param msg the byte array we are decoding
+	 * @param msg this is the byte array we have received and need to decode.
 	 */
 	public ElevatorMessage(byte[] msg) {
 		this.msg = msg;
@@ -88,7 +97,10 @@ public class ElevatorMessage {
 			i++;
 		}
 	}
-
+	
+	/**
+	 * Constructs a byte array representing this instance with a max size of 100.
+	 */
 	void createByteString() {
 		int i = 0;
 
@@ -106,10 +118,22 @@ public class ElevatorMessage {
 		}
 	}
 	
+	/**
+	 * Returns the type of message
+	 * @return MessageType 
+	 */
 	public MessageType getType() {
 		return this.type;
 	}
 
+	/**
+	 * Returns either the direction requested (if type == ELEV_REQUEST) or 
+	 * the current elevator car's direction.
+	 * Supported message types include ELEV_REQUEST, ELEV_PICKUP, or ELEV_ARRIVAL.
+	 * 
+	 * 
+	 * @return int -1 -> wrong message type, 1 -> UP, 2 -> DOWN
+	 */
 	public int getDirection() {
 		if (type != MessageType.ELEV_REQUEST && type != MessageType.ELEV_PICKUP && type != MessageType.ELEV_ARRIVAL ) {
 			return -1;
@@ -118,10 +142,23 @@ public class ElevatorMessage {
 		return data.get(0);
 	}
 
+	/**
+	 * Returns the number of the floor or elevator car sending the message
+	 * 
+	 * @return int id
+	 */
 	public int getId() {
 		return this.id;
 	}
 	
+	/**
+	 * Returns the floor the elevator has stopped on or -1 if the messagetype 
+	 * does not support floors.
+	 * Supported message types include ELEV_PICKUP and ELEV_ARRIVAL.
+	 * 
+	 * 
+	 * @return int elevator's current floor.
+	 */
 	public int getFloor() {
 		if (type != MessageType.ELEV_PICKUP && type != MessageType.ELEV_ARRIVAL ) {
 			return -1;
@@ -129,20 +166,40 @@ public class ElevatorMessage {
 		return this.data.get(1);
 	}
 
+	/**
+	 * Returns the floor requested when the elevator has picked up 
+	 * a passenger or -1 if the message type does not support requested floors.
+	 * Supported message types include PASSENGER_ENTER.
+	 * 
+	 * @return int floor number.
+	 */
 	public int getRequestedFloor() {
-		if (type != MessageType.PASSENGER_ENTER) {
-			return -1;
-		}
-		return data.get(0);
-	}
-	
-	public int getCarNum() {
 		if (type != MessageType.PASSENGER_ENTER) {
 			return -1;
 		}
 		return data.get(1);
 	}
+	
+	/**
+	 * Returns the car the passenger has entered or -1 if the message does not 
+	 * support car numbers.
+	 * Supported message types include PASSENGER_ENTER.
+	 * 
+	 * @return int carNum
+	 */
+	public int getCarNum() {
+		if (type != MessageType.PASSENGER_ENTER) {
+			return -1;
+		}
+		return data.get(0);
+	}
 
+	/**
+	 * If a passenger has requested multiple floors, returns all of them.
+	 * Supported message types include PASSENGER_ENTER.
+	 * 
+	 * @return int[] requestedFloors
+	 */
 	public int[] getRequestedFloors() {
 		if (type != MessageType.PASSENGER_ENTER) {
 			return new int[] { -1 };
@@ -150,7 +207,7 @@ public class ElevatorMessage {
 
 		int[] ret = new int[data.size()];
 
-		int i = 0;
+		int i = 1;
 		for (Integer x : data) {
 			ret[i] = x;
 			i++;
@@ -158,10 +215,19 @@ public class ElevatorMessage {
 		return ret;
 	}
 
+	/**
+	 * Returns the array of bytes representing this instance with a max size of 100 
+	 * 
+	 * @return byte[] msg
+	 */
 	public byte[] getBytes() {
 		return msg;
 	}
 
+	
+	/**
+	 * Neatly outputs the class variables in a string
+	 */
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("\nMessage Type: " + this.type);
@@ -170,53 +236,5 @@ public class ElevatorMessage {
 		return sb.toString();
 	}
 
-	/*
-	 * /* A message datatype to serialize/deserialize our byte string datagrams
-	 * public static final int SIZE = 9; public static final byte SEP = '*';
-	 * 
-	 * int direction = 0; // 1 -> UP, 2 -> DOWN int currFloor; int movingTo; int
-	 * car; // the elevator car sending/receiving the message
-	 * 
-	 * byte[] msg;
-	 * 
-	 * public ElevatorMessage(int direction, int currFloor, int movingTo) { // data
-	 * constructor this.direction = direction; this.movingTo = movingTo;
-	 * this.currFloor = currFloor;
-	 * 
-	 * // TODO : add car to constructor this.car = 1;
-	 * 
-	 * msg = new byte[9]; msg[0] = SEP; msg[1] = (byte)this.direction; msg[2] = SEP;
-	 * msg[3] = (byte)this.currFloor; msg[4] = SEP; msg[5] = (byte)this.movingTo;
-	 * msg[6] = SEP; msg[7] = (byte)this.car; msg[8] = SEP; }
-	 * 
-	 * 
-	 * public ElevatorMessage(byte[] msg) { // byte string constructor this.msg =
-	 * msg;
-	 * 
-	 * 
-	 * this.direction = (int)msg[1]; this.currFloor = (int)msg[3]; this.movingTo =
-	 * (int)msg[5]; this.car = 1; }
-	 * 
-	 * public boolean isUp() { return direction == 1; }
-	 * 
-	 * public boolean isDown() { return direction == 2; }
-	 * 
-	 * public int getCurrentFloor() { return currFloor; }
-	 * 
-	 * public int getDirection() { return direction; }
-	 * 
-	 * public int getMovingTo() { return movingTo; }
-	 * 
-	 * public int getCar() { return this.car; }
-	 * 
-	 * public byte[] getBytes() { return msg; }
-	 * 
-	 * public String toString() { StringBuilder sb = new StringBuilder();
-	 * sb.append("\nDirection: " ); if(direction == 1) { sb.append("UP"); }
-	 * if(direction == 2) { sb.append("DOWN"); }
-	 * 
-	 * sb.append("\nOn Floor: " + currFloor); if (movingTo > 0)
-	 * sb.append("\nGoing To: " + movingTo); return sb.toString(); }
-	 * 
-	 */
+	
 }
