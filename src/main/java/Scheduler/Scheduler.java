@@ -9,6 +9,7 @@ import core.EventNotifier;
 
 import Floor.FloorController;
 import Elevator.ElevatorController;
+import Logger.Logger;
 
 // TODO : Scheduler documentation
 public class Scheduler {
@@ -36,7 +37,7 @@ public class Scheduler {
 	public void startListen() throws InterruptedException {
 		// THIS ACTS AS A PRODUCER
 		System.out.println("SCHEDULER: Starting listener...");
-		Logger.Logger.write("SCHEDULER: Starting listener...", schedulerTestLogFileName);
+		Logger.write("SCHEDULER: Starting listener...", schedulerTestLogFileName);
 		for (;;) {
 			ElevatorMessage msg = listener.waitForNotification();
 			switch (msg.getType()) {
