@@ -100,7 +100,7 @@ public class Elevator {
 			floor + " from floor " + Integer.toString(onFloor) + " at "  + time.format(cal.getTime()), "Logs/elevator.log");
 		}
 
-		int time = Math.abs(onFloor - floor) * timeBetweenFloors;
+		int time = (Math.abs(onFloor - floor)) * timeBetweenFloors;
 
 
 		new java.util.Timer().schedule(

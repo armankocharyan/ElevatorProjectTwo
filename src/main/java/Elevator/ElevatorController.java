@@ -24,7 +24,7 @@ public class ElevatorController {
 		// initialize all your elevators
 		elevators = new Elevator[numElevators];
 		for(int i=0; i<numElevators; i++) {
-			elevators[i] = new Elevator(i, numFloors, 3000);
+			elevators[i] = new Elevator(i, numFloors, timeBetweenFloors);
 		}
 		
 		messageListener = new EventListener(PORT, "ELEVATOR CONTROLLER");

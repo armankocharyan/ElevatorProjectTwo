@@ -18,6 +18,8 @@ public class FloorController {
 	
 	EventListener listener;
 	
+	int isWaiting = -1;
+	
 	public FloorController(int numFloors) {
 		this.numFloors = numFloors;
 		
@@ -31,6 +33,9 @@ public class FloorController {
 		listener = new EventListener(PORT, "FLOOR ELEVATOR LISTENER");
 	}
 	
+	public boolean isWaiting() {
+		return isWaiting > 0;
+	}
 	
 	public void startListen() {
 		// listens for notifications from the scheduler that an elevator has arrived
@@ -45,6 +50,7 @@ public class FloorController {
 				System.out.println("\nFLOOR CONTROLLER: RECEIVED FLOOR " + msg.getFloor() + " ELEVATOR PICKUP NOTIFICATION" + msg);
 				floors[msg.getFloor()].elevArrival(msg.getDirection(), msg.getId());
 				floors[msg.getFloor()].passengerEnter(msg.getId());
+				isWaiting = -1;
 				break;
 			case ELEV_ARRIVAL:
 				System.out.println("\nFLOOR CONTROLLER: RECEIVED FLOOR " + msg.getFloor() + " ELEVATOR ARRIVAL NOTIFICATION" + msg);
@@ -73,11 +79,11 @@ public class FloorController {
 		
 	}
 	
-	public boolean requestFloor(int from, int to) {
+	public void requestFloor(int from, int to) {
 		
 		if (to > from) floors[from].reqUp(to);
 		else floors[from].reqDown(to);
-		return true;
+		isWaiting = from;
 	}
 	
 	public void readInput() {

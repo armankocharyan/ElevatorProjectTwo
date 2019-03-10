@@ -11,31 +11,42 @@ import Scheduler.Scheduler;
 
 public class ElevatorTimingTest {
 	
-	static Scheduler sched;
+	
+	static Async tester;
 	static FloorController fCtrl;
 	static ElevatorController eCtrl;
 	
+	
 	@BeforeClass
 	public static void runBeforeClass() {
-		sched = new Scheduler(2);
-		eCtrl = new ElevatorController(2,8, 3000);
+		tester = new Async();
 		fCtrl = new FloorController(8);
-		sched.start();
-		eCtrl.start();
-		fCtrl.start();
+		eCtrl = new ElevatorController(2,8, 20000);
 	}
 	
 	
-	@Test
+	@Test(expected = RuntimeException.class)
 	public void timeTest() {
 		
-		assertEquals(true, fCtrl.requestFloor(0, 4));
+		tester.start();
+		fCtrl.start();
+		eCtrl.start();
+		fCtrl.requestFloor(1, 7);
 		
-		try {
-			Thread.sleep(3000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		while (fCtrl.isWaiting()) {
+			try {
+				try {
+					tester.test();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				Thread.sleep(500);
+				
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		
 	}

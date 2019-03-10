@@ -81,7 +81,7 @@ public class Scheduler {
 				            @Override
 				            public void run() {
 				                if (passStuck[nfloor]) {
-				                	throw new RuntimeException("PASSENGER STUCK");
+				                	throwRuntime("PASSENGER STUCK");
 				                }
 				            }
 				        },
@@ -143,7 +143,9 @@ public class Scheduler {
 			            @Override
 			            public void run() {
 			                if (requestNotServed[nFloor]) {
-			                	throw new RuntimeException("ELEVATOR TIMEOUT");
+			                	
+			                	throwRuntime("ELEVATOR TIMEOUT");
+			                	
 			                }
 			            }
 			        },
@@ -153,6 +155,10 @@ public class Scheduler {
 		}
 	}
 
+	void throwRuntime(String s) {
+		throw new RuntimeException(s);
+	}
+	
 	public void start() {
 		Scheduler s = this;
 
