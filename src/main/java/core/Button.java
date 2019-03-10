@@ -25,7 +25,7 @@ public class Button {
 	public void setPressed(boolean pressed) {
 		
 		cal = Calendar.getInstance();
-		Logger.write("Button Pressed " + time.format(cal.getTime()) , "Logs/button.log");
+		Logger.write("BUTTON PRESSED AT " + time.format(cal.getTime()) + "\n", "Logs/button.log");
 		this.pressed = pressed;
 		if (pressed) System.out.println(name+" PRESSED.");
 		else System.out.println(name+" UNPRESSED.");
