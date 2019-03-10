@@ -18,7 +18,7 @@ public class ElevatorTimingTest {
 	@BeforeClass
 	public static void runBeforeClass() {
 		sched = new Scheduler(2);
-		eCtrl = new ElevatorController(2,8);
+		eCtrl = new ElevatorController(2,8, 3000);
 		fCtrl = new FloorController(8);
 	}
 	

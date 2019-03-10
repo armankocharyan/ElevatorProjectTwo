@@ -12,18 +12,19 @@ public class ElevatorController {
 	Elevator[] elevators = null;
 	int numElevators = 0; // number of elevator cars
 	int numFloors; 
+	int timeBetweenFloors;
 	
 	EventListener messageListener = null;
 	
-	public ElevatorController(int numElevators, int numFloors) {
+	public ElevatorController(int numElevators, int numFloors, int timeBetweenFloors) {
 		
 		this.numElevators = numElevators;
 		this.numFloors = numFloors;
-		
+		this.timeBetweenFloors = timeBetweenFloors;
 		// initialize all your elevators
 		elevators = new Elevator[numElevators];
 		for(int i=0; i<numElevators; i++) {
-			elevators[i] = new Elevator(i, numFloors);
+			elevators[i] = new Elevator(i, numFloors, 3000);
 		}
 		
 		messageListener = new EventListener(PORT, "ELEVATOR CONTROLLER");
@@ -82,12 +83,12 @@ public class ElevatorController {
 	}
 	
 	public static void runElevator() {
-		ElevatorController c = new ElevatorController(2, 8);
+		ElevatorController c = new ElevatorController(2, 8, 3000);
 		c.start();
 	}
 	
 	public static void main(String[] args) {
-		ElevatorController c = new ElevatorController(2, 8);
+		ElevatorController c = new ElevatorController(2, 8, 3000);
 		c.start();
 	}
 	
