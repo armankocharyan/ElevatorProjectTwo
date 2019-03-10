@@ -44,8 +44,40 @@ public class Logger {
 		Logger.clearText("TestLogs/floor.testing");
 	}
 	
+	
+	public static void testFunction(int time) {
+		
+		new java.util.Timer().schedule( 
+		        new java.util.TimerTask() {
+		            @Override
+		            public void run() {
+		                System.out.println("Excecuting");
+		            }
+		        }, 
+		        time
+		);
+		
+	}
+	
+	public static void testFunction2(int time) throws InterruptedException {
+		
+		Thread.sleep(5000);
+		
+		
+		System.out.println("");
+		
+	}
+	
+	
+
+	
 	public static void main(String[] args) {
-		Logger.write("asdfasdfafd", "TestLogs/test.testing");
+
+		testFunction(15000);
+		
+		System.out.println("Roman is very handsome");
+		
+		
 	}
 	
 }
