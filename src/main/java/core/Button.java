@@ -35,9 +35,9 @@ public class Button {
 	
 	public void setActive(boolean active) {
 		if(active)
-		Logger.write("BUTTON ACTIVATED AT " + time.format(cal.getTime()), "Logs/button.log");
+		Logger.write("BUTTON ACTIVATED AT " + time.format(cal.getTime()) + "\n", "Logs/button.log");
 		else
-			Logger.write("BUTTON IS DEACTIVATED AT " + time.format(cal.getTime()), "Logs/button.log");
+			Logger.write("BUTTON IS DEACTIVATED AT " + time.format(cal.getTime()) + "\n", "Logs/button.log");
 		
 		this.active = active;
 		if (pressed) System.out.println(name+" active.");

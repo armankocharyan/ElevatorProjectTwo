@@ -23,13 +23,13 @@ public class Door {
 	}
 	
 	public void open() {
-			Logger.write("Door is Open at " + time.format(cal.getTime()), "Logs/door.log");
+			Logger.write("DOOR IS OPEN AT " + time.format(cal.getTime()) + "\n", "Logs/door.log");
 		
 		this.isOpen = true;
 	}
 	
 	public void close() {
-		Logger.write("Door is Closed at " + time.format(cal.getTime()), "Logs/door.log");
+		Logger.write("DOOR IS CLOSED AT " + time.format(cal.getTime()) + "\n", "Logs/door.log");
 		this.isOpen = false;
 	}
 	

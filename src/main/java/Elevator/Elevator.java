@@ -1,5 +1,7 @@
 package Elevator;
 
+import Logger.Logger;
+
 import core.Button;
 import core.EventNotifier;
 import core.ElevatorMessage;
@@ -78,11 +80,11 @@ public class Elevator {
 	public void pickUpPerson(int floor, int dir) {
 		cal = Calendar.getInstance();
 		System.out.println("\nPICKING UP PERSON ON FLOOR " + floor);
-		Logger.Logger.write("\nPICKING UP PERSON ON FLOOR " + floor, elevatorTestLogFileName );
+		Logger.write("\nPICKING UP PERSON ON FLOOR " + floor, elevatorTestLogFileName );
 		if(dir == 1)
-			Logger.Logger.write("\n" + carNum + " IS GOING UP PICKING UP PERSON ON FLOOR " + floor + " AT " + time.format(cal.getTime()) + "\n", "Log/elevator.log");
+			Logger.write("\nCar " + carNum + " IS GOING UP PICKING UP PERSON ON FLOOR " + floor + " AT " + time.format(cal.getTime()) + "\n", "Logs/elevator.log");
 		else
-			Logger.Logger.write("\n" + carNum + " IS GOING DOWN PICKING UP PERSON ON FLOOR " + floor + " AT " + time.format(cal.getTime()) + "\n", "Log/elevator.log");
+			Logger.write("\nCar " + carNum + " IS GOING DOWN PICKING UP PERSON ON FLOOR " + floor + " AT " + time.format(cal.getTime()) + "\n", "Logs/elevator.log");
 
 		occupied = true;
 		
@@ -127,8 +129,8 @@ public class Elevator {
 	public void rideToFloor(int destination) {
 		cal = Calendar.getInstance();
 		System.out.println("\nTAKING PERSON TO FLOOR " + destination);
-		Logger.Logger.write("\nTAKING PERSON TO FLOOR " + destination, elevatorTestLogFileName );
-		Logger.Logger.write("\n" + carNum + " IS TAKING PERSON TO FLOOR " + destination + " AT " + time.format(cal.getTime()) + "\n", "Log/elevator.log");
+		Logger.write("\nTAKING PERSON TO FLOOR " + destination, elevatorTestLogFileName );
+		Logger.write("\nCar " + carNum + " IS TAKING PERSON TO FLOOR " + destination + " AT " + time.format(cal.getTime()) + "\n", "Logs/elevator.log");
 		if (onFloor > destination) this.direction = 2;
 		else this.direction = 1;
 		try {
@@ -154,8 +156,8 @@ public class Elevator {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		Logger.Logger.write("\n" + carNum + " HAS TAKEN PERSON TO REQUESTED FLOOR " + destination + " AT " + time.format(cal.getTime()) + "\n", "Log/elevator.log");
 		// set our new current floor to the floor we want to arrive at and our direction
+		Logger.write("\nCar " + carNum + " HAS TAKEN PERSON TO REQUESTED FLOOR " + destination + " AT " + time.format(cal.getTime()) + "\n", "Logs/elevator.log");
 		this.onFloor = destination;
 		
 		// send notification to scheduler saying that we have arrived and that we have no pending destination
@@ -170,7 +172,11 @@ public class Elevator {
 		// open the doors
 	}
 	
-
+	public static void main(String[] args) {
+		Elevator ele = new Elevator(1, 5);
+		ele.pickUpPerson(2, 1);
+		ele.rideToFloor(3);
+	}
 	
 	
 }

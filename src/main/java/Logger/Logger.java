@@ -44,6 +44,15 @@ public class Logger {
 		Logger.clearText("TestLogs/floor.testing");
 	}
 	
+	public static void clearAllLogFiles() {
+	
+		Logger.clearText("Logs/button.log");
+		Logger.clearText("Logs/door.log");
+		Logger.clearText("Logs/lamp.log");
+		Logger.clearText("Logs/scheduler.log");
+		Logger.clearText("Logs/elevator.log");
+		
+	}
 	public static void main(String[] args) {
 		
 	}
