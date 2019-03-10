@@ -1,16 +1,16 @@
-Elevator0 Going UP to PICK UP to floor 0 from floor 0 at 21:51:36.230
-Elevator0 Has arrived to floor 0 at 21:51:36.231
-Elevator0 Going UP to requested floor 4 from floor 0 at 21:51:36.247
-Elevator1 Going UP to PICK UP to floor 2 from floor 0 at 21:51:36.247
-Elevator1 Has arrived to floor 2 at 21:51:38.263
-Elevator1 Going UP to requested floor 3 from floor 2 at 21:51:38.282
-Elevator1 Has arrived to floor3 at 21:51:39.298
-Elevator1 Going DOWN to PICK UP to floor 3 from floor 3 at 21:51:39.301
-Elevator1 Has arrived to floor 3 at 21:51:39.302
-Elevator1 Going DOWN to requested floor 2 from floor3 at 21:51:39.317
-Elevator0 Has arrived to floor4 at 21:51:40.255
-Elevator0 Going UP to PICK UP to floor 1 from floor 4 at 21:51:40.255
-Elevator1 Has arrived to floor2 at 21:51:40.317
-Elevator0 Has arrived to floor 1 at 21:51:43.259
-Elevator0 Going UP to requested floor 7 from floor 1 at 21:51:43.279
-Elevator0 Has arrived to floor7 at 21:51:49.293
+Elevator0 Going to PICK UP to floor 0 from floor 0 at 21:55:45.512
+Elevator0 Has arrived to floor 0 at 21:55:45.515
+Elevator0 Going to requested floor 4 from floor 0 at 21:55:45.537
+Elevator1 Going to PICK UP to floor 2 from floor 0 at 21:55:45.539
+Elevator1 Has arrived to floor 2 at 21:55:47.545
+Elevator1 Going to requested floor 3 from floor 2 at 21:55:47.565
+Elevator1 Has arrived to floor3 at 21:55:48.565
+Elevator1 Going to PICK UP to floor 3 from floor 3 at 21:55:48.567
+Elevator1 Has arrived to floor 3 at 21:55:48.569
+Elevator1 Going to requested floor 2 from floor3 at 21:55:48.609
+Elevator0 Has arrived to floor4 at 21:55:49.552
+Elevator0 Going to PICK UP to floor 1 from floor 4 at 21:55:49.552
+Elevator1 Has arrived to floor2 at 21:55:49.614
+Elevator0 Has arrived to floor 1 at 21:55:52.556
+Elevator0 Going to requested floor 7 from floor 1 at 21:55:52.579
+Elevator0 Has arrived to floor7 at 21:55:58.581

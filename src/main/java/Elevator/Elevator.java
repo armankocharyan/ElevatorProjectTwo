@@ -86,17 +86,17 @@ public class Elevator {
 		if (dir == 2) {
 			this.direction = 2;
 			cal = Calendar.getInstance();
-			System.out.println("Elevator" + Integer.toString(this.carNum) + " Going down to PICK UP to floor " +
+			System.out.println("Elevator" + Integer.toString(this.carNum) + " Going to PICK UP to floor " +
 			floor + " from floor " + Integer.toString(onFloor) + " at " + time.format(cal.getTime()));
-			Logger.write("Elevator" + Integer.toString(this.carNum) + " Going DOWN to PICK UP to floor " +
+			Logger.write("Elevator" + Integer.toString(this.carNum) + " Going to PICK UP to floor " +
 			floor + " from floor " + Integer.toString(onFloor) + " at " + time.format(cal.getTime()), "Logs/elevator.log");
 		}
 		else {
 			this.direction = 1;
 			cal = Calendar.getInstance();
-			System.out.println("Elevator" + Integer.toString(this.carNum) + " Going up to PICK UP to floor " +
+			System.out.println("Elevator" + Integer.toString(this.carNum) + " Going uto PICK UP to floor " +
 			floor + " from floor " + Integer.toString(onFloor) + " at "  + time.format(cal.getTime()));
-			Logger.write("Elevator" + Integer.toString(this.carNum) + " Going UP to PICK UP to floor " +
+			Logger.write("Elevator" + Integer.toString(this.carNum) + " Going to PICK UP to floor " +
 			floor + " from floor " + Integer.toString(onFloor) + " at "  + time.format(cal.getTime()), "Logs/elevator.log");
 		}
 
@@ -127,17 +127,17 @@ public class Elevator {
 		if (onFloor > destination) {
 			this.direction = 2;
 			cal = Calendar.getInstance();
-			System.out.println("Elevator" + Integer.toString(this.carNum) + " Going DOWN to requested floor " +
+			System.out.println("Elevator" + Integer.toString(this.carNum) + " Going to requested floor " +
 			destination + " from floor" + Integer.toString(onFloor) + " at " + time.format(cal.getTime()));
-			Logger.write("Elevator" + Integer.toString(this.carNum) + " Going DOWN to requested floor " +
+			Logger.write("Elevator" + Integer.toString(this.carNum) + " Going to requested floor " +
 					destination + " from floor" + Integer.toString(onFloor) + " at " + time.format(cal.getTime()), "Logs/elevator.log");
 		}
 		else {
 			this.direction = 1;
 			cal = Calendar.getInstance();
-			System.out.println("Elevator" + Integer.toString(this.carNum) + " Going UP to requested floor " +
+			System.out.println("Elevator" + Integer.toString(this.carNum) + " Going to requested floor " +
 			destination + " from floor " + Integer.toString(onFloor) + " at "  + time.format(cal.getTime()));
-			Logger.write("Elevator" + Integer.toString(this.carNum) + " Going UP to requested floor " +
+			Logger.write("Elevator" + Integer.toString(this.carNum) + " Going to requested floor " +
 			destination + " from floor " + Integer.toString(onFloor) + " at "  + time.format(cal.getTime()), "Logs/elevator.log");
 		}
 
