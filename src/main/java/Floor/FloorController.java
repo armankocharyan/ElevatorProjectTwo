@@ -71,8 +71,13 @@ public class FloorController {
 		
 		t1.start();
 		
+	}
+	
+	public boolean requestFloor(int from, int to) {
 		
-		
+		if (to > from) floors[from].reqUp(to);
+		else floors[from].reqDown(to);
+		return true;
 	}
 	
 	public void readInput() {
