@@ -1,5 +1,7 @@
 package Scheduler;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -21,6 +23,8 @@ public class Scheduler {
 	EventNotifier elevatorNotifier;
 	EventNotifier floorNotifier;
 
+	private Calendar cal; 
+	private SimpleDateFormat time;
 
 	Queue<ElevatorMessage> queue = new LinkedList<ElevatorMessage>(); // our queue of requests
 	int processing = 0; // if this is > 0, we have an elevator moving to a floor to respond to a
@@ -32,12 +36,15 @@ public class Scheduler {
 		elevatorNotifier = new EventNotifier(ElevatorController.PORT, "SCHEDULER ELEVATOR NOTIFIER");
 		floorNotifier = new EventNotifier(FloorController.PORT, "SCHEDULER FLOOR NOTIFIER");
 		this.numCars = numCars;
+		time = new SimpleDateFormat("HH:mm:ss.SSS");
+
 	}
 
 	public void startListen() throws InterruptedException {
 		// THIS ACTS AS A PRODUCER
 		System.out.println("SCHEDULER: Starting listener...");
 		Logger.write("SCHEDULER: Starting listener...", schedulerTestLogFileName);
+		Logger.write("SCHEDULER: Starting listener at " + time.format(cal.getTime()), "Log/scheduler.log");
 		for (;;) {
 			ElevatorMessage msg = listener.waitForNotification();
 			switch (msg.getType()) {

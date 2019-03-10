@@ -7,8 +7,8 @@ import java.io.PrintWriter;
 
 public class Logger {
     // THIS CLASS HAS STATIC METHODS THAT ARE CALLED TO LOG DATA FOR TESTING REASON
-	
-	
+
+
     //outputs rawString to file name output
 	public static void write(String rawString, String fileName){
         try {
@@ -36,48 +36,25 @@ public class Logger {
             System.err.println("Could not write to file, Exception: " + e.getMessage());
         }
     }
-	
+
 	//clears all the text from the logs
 	public static void clearAllTextFiles() {
 		Logger.clearText("TestLogs/elevator.testing");
 		Logger.clearText("TestLogs/scheduler.testing");
 		Logger.clearText("TestLogs/floor.testing");
 	}
-	
-	
-	public static void testFunction(int time) {
-		
-		new java.util.Timer().schedule( 
-		        new java.util.TimerTask() {
-		            @Override
-		            public void run() {
-		                System.out.println("Excecuting");
-		            }
-		        }, 
-		        time
-		);
-		
-	}
-	
-	public static void testFunction2(int time) throws InterruptedException {
-		
-		Thread.sleep(5000);
-		
-		
-		System.out.println("");
-		
-	}
-	
-	
 
-	
+	public static void clearAllLogFiles() {
+
+		Logger.clearText("Logs/button.log");
+		Logger.clearText("Logs/door.log");
+		Logger.clearText("Logs/lamp.log");
+		Logger.clearText("Logs/scheduler.log");
+		Logger.clearText("Logs/elevator.log");
+
+	}
 	public static void main(String[] args) {
 
-		testFunction(15000);
-		
-		System.out.println("Roman is very handsome");
-		
-		
 	}
-	
+
 }
