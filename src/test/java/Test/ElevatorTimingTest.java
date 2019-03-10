@@ -21,7 +21,7 @@ public class ElevatorTimingTest {
 	public static void runBeforeClass() {
 		tester = new Async();
 		fCtrl = new FloorController(8);
-		eCtrl = new ElevatorController(2,8, 20000);
+		eCtrl = new ElevatorController(2,8, 7000);
 	}
 	
 	
@@ -31,7 +31,7 @@ public class ElevatorTimingTest {
 		tester.start();
 		fCtrl.start();
 		eCtrl.start();
-		fCtrl.requestFloor(1, 7);
+		fCtrl.requestFloor(7, 1);
 		
 		while (fCtrl.isWaiting()) {
 			try {
