@@ -4,6 +4,10 @@ import core.Button;
 import core.EventNotifier;
 import core.ElevatorMessage;
 import core.Lamp;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 import Scheduler.Scheduler;
 
 /**
@@ -24,6 +28,9 @@ public class Elevator {
 	boolean occupied = false;
 	EventNotifier notif;
 	
+	private Calendar cal; 
+	private SimpleDateFormat time;
+	
 	// TODO : populate and implement our doors/motors/buttons/lamps in our Elevators
 	Door door;
 	Motor motor;
@@ -38,6 +45,7 @@ public class Elevator {
 		this.carNum = carNum;
 		this.destinationFloors = new int[numFloors];
 		this.notif = new EventNotifier(Scheduler.PORT, "ELEVATOR");
+		time = new SimpleDateFormat("HH:mm:ss.SSS");
 	}
 	
 	// -- GETTERS -- //
@@ -68,8 +76,14 @@ public class Elevator {
 	 * @param dir the direction requested.
 	 */
 	public void pickUpPerson(int floor, int dir) {
+		cal = Calendar.getInstance();
 		System.out.println("\nPICKING UP PERSON ON FLOOR " + floor);
 		Logger.Logger.write("\nPICKING UP PERSON ON FLOOR " + floor, elevatorTestLogFileName );
+		if(dir == 1)
+			Logger.Logger.write("\n" + carNum + " IS GOING UP PICKING UP PERSON ON FLOOR " + floor + " AT " + time.format(cal.getTime()) + "\n", "Log/elevator.log");
+		else
+			Logger.Logger.write("\n" + carNum + " IS GOING DOWN PICKING UP PERSON ON FLOOR " + floor + " AT " + time.format(cal.getTime()) + "\n", "Log/elevator.log");
+
 		occupied = true;
 		
 		try {
@@ -111,8 +125,10 @@ public class Elevator {
 	 * @param destination the floor we need to ride to.
 	 */
 	public void rideToFloor(int destination) {
+		cal = Calendar.getInstance();
 		System.out.println("\nTAKING PERSON TO FLOOR " + destination);
 		Logger.Logger.write("\nTAKING PERSON TO FLOOR " + destination, elevatorTestLogFileName );
+		Logger.Logger.write("\n" + carNum + " IS TAKING PERSON TO FLOOR " + destination + " AT " + time.format(cal.getTime()) + "\n", "Log/elevator.log");
 		if (onFloor > destination) this.direction = 2;
 		else this.direction = 1;
 		try {
@@ -133,10 +149,12 @@ public class Elevator {
 			}
 			
 			System.out.println("We have arrived at floor " + destination); 
+			
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+		Logger.Logger.write("\n" + carNum + " HAS TAKEN PERSON TO REQUESTED FLOOR " + destination + " AT " + time.format(cal.getTime()) + "\n", "Log/elevator.log");
 		// set our new current floor to the floor we want to arrive at and our direction
 		this.onFloor = destination;
 		
