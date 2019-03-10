@@ -57,7 +57,7 @@ public class FloorController {
 		}
 	}
 	
-	public void start() throws InterruptedException {
+	public void start() {
 		FloorController s = this;
 		
 		// start the thread that listens for notifications from the scheduler
@@ -76,7 +76,12 @@ public class FloorController {
 		
 		ArrayList<RequestData> inputData = ReadFile.getData("inputFile.txt");
 		// everything below this is just demo runs
-		Thread.sleep(5000);
+		try {
+			Thread.sleep(5000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		if(inputData.get(0).goingUp()) {
 			floors[inputData.get(0).getFloorNumber()].reqUp(inputData.get(0).getfloorToGo());
@@ -86,7 +91,12 @@ public class FloorController {
 		}
 		
 		
-		Thread.sleep(30);
+		try {
+			Thread.sleep(30);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		if(inputData.get(1).goingUp()) {
 			floors[inputData.get(1).getFloorNumber()].reqUp(inputData.get(1).getfloorToGo());
@@ -116,12 +126,7 @@ public class FloorController {
 		
 		
 		FloorController c = new FloorController(8);
-		try {
-			c.start();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		c.start();
 	}
 	
 }
