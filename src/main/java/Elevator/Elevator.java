@@ -5,10 +5,8 @@ import core.Button;
 import core.EventNotifier;
 import core.ElevatorMessage;
 import core.Lamp;
-
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-
 import Scheduler.Scheduler;
 
 
@@ -26,6 +24,7 @@ public class Elevator {
 	int onFloor = 0;
 	int direction = 1;
 	int carNum = -1;
+	int timeBetweenFloors = 0;
 	int[] destinationFloors = null;
 	boolean occupied = false;
 	EventNotifier notif;
@@ -39,8 +38,9 @@ public class Elevator {
 	Button[] floorBtns;
 
 	// -- CONSTRUCTOR -- //
-	public Elevator(int carNum, int numFloors) {
+	public Elevator(int carNum, int numFloors, int timeBetweenFloors) {
 		this.numFloors = numFloors;
+		this.timeBetweenFloors = timeBetweenFloors;
 		this.onFloor = 0;
 		this.direction = 1;
 		this.carNum = carNum;
@@ -100,7 +100,7 @@ public class Elevator {
 			floor + " from floor " + Integer.toString(onFloor) + " at "  + time.format(cal.getTime()), "Logs/elevator.log");
 		}
 
-		int time = Math.abs(onFloor - floor) * 3000;
+		int time = Math.abs(onFloor - floor) * timeBetweenFloors;
 
 
 		new java.util.Timer().schedule(
@@ -141,7 +141,7 @@ public class Elevator {
 			destination + " from floor " + Integer.toString(onFloor) + " at "  + time.format(cal.getTime()), "Logs/elevator.log");
 		}
 
-		int time = Math.abs(onFloor - destination) * 3000;
+		int time = Math.abs(onFloor - destination) * timeBetweenFloors;
 		new java.util.Timer().schedule(
 		        new java.util.TimerTask() {
 		            @Override
