@@ -94,13 +94,13 @@ public class Elevator {
 		else {
 			this.direction = 1;
 			cal = Calendar.getInstance();
-			System.out.println("Elevator" + Integer.toString(this.carNum) + " Going uto PICK UP to floor " +
+			System.out.println("Elevator" + Integer.toString(this.carNum) + " Going to PICK UP to floor " +
 			floor + " from floor " + Integer.toString(onFloor) + " at "  + time.format(cal.getTime()));
 			Logger.write("Elevator" + Integer.toString(this.carNum) + " Going to PICK UP to floor " +
 			floor + " from floor " + Integer.toString(onFloor) + " at "  + time.format(cal.getTime()), "Logs/elevator.log");
 		}
 
-		int time = Math.abs(onFloor - floor) * 1000;
+		int time = Math.abs(onFloor - floor) * 3000;
 
 
 		new java.util.Timer().schedule(
@@ -141,7 +141,7 @@ public class Elevator {
 			destination + " from floor " + Integer.toString(onFloor) + " at "  + time.format(cal.getTime()), "Logs/elevator.log");
 		}
 
-		int time = Math.abs(onFloor - destination) * 1000;
+		int time = Math.abs(onFloor - destination) * 3000;
 		new java.util.Timer().schedule(
 		        new java.util.TimerTask() {
 		            @Override
@@ -189,9 +189,6 @@ public class Elevator {
 		openDoors();
 
 	}
-
-
-
 
 
 
