@@ -12,19 +12,64 @@ To run the tests
 - run CucumberRunner.java as a junit test
 
 
-Parts worked on by each member:
+Description: 
 
+Door.java
+	The class which controls the doors of the elevator.
+	
+Elevator.java
+	Represents a single elevator car connected to our ElevatorController. This class tracks where our car is
+		at any point in time and notifies our scheduler when it has arrived at a floor. 
+		
+ElevatorController.java	
+	This class controls the elevators and receives messages from the scheduler. It acts as our server class.
+	
+Motor.java
+	Currently empty class, will be used in the future.
+	
+
+File package
+------------
+ReadFile.java
+	This class holds static methods that will parse the input file.
+	
+	
+Floor package
+-------------
+Floor.java
+	Represents a single floor connected to our FloorController. This class tracks when a car is
+		requested or has arrived at a floor and notifies our scheduler.
+	
+FloorController.java
+		This class controls the floors and receives messages from the scheduler. It acts as our client class.
+
+		
+Logger package	
+--------------
+Logger.java	
+	This class contains static methods that are called to log data for testing reasons
+	
+
+Scheduler package
+-----------------
+Scheduler.java
+	Processes the messages between the floors and the elevators, sending the specific requests and messages to their
+		proper destinations based on what it has received. This class acts as our intermediateHost class.
+
+		
+Breakdown of Responsibilities
+-----------------------------
 Arman Kocharyan
-- Worked on test cases, timing of elevator carts, created cucumber tests and the logger, Elevator message, which is the default message class for all UDP messages to and from out three subsystems
-
-Kaitie Nelson
--Worked on floor subsystem arrival, and floor controller, sensors working, and implemented pickUpPerson, rideToFloor, the event listener which opens a socket on a given port and listens until message is received.
-
+	Worked on exceptions and testing 
+	
+Katie Nelson
+	Worked on exceptions and testing
+	
 Andrew Dodge
--Worked on UML class diagram, startListen which starts a new thread/daemon that blocks and waits call
-
+	Worked on timing and diagrams
+	
 Mohamed Gahelrasoul
--Documentation, timing diagrams, worked on resetting the buttons, and elevator arrival
-
+	Worked on timing and diagrams
+	
 Roman Kishinevsky
-- Requesting elevator up and down, with the up down buttons, small interactions with the elevator
+	Worked on timing and diagrams
