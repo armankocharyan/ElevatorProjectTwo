@@ -1,7 +1,6 @@
 package Elevator;
 
 import Logger.Logger;
-
 import core.Button;
 import core.EventNotifier;
 import core.ElevatorMessage;
@@ -11,6 +10,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import Scheduler.Scheduler;
+
 
 /**
  * Represents a single elevator car connected to our ElevatorController. This class
@@ -24,14 +24,13 @@ public class Elevator {
 	// -- INSTANCE VARIABLES -- //
 	int numFloors;
 	int onFloor = 0;
-	int[] destinationFloors = null;
 	int direction = 1;
 	int carNum = -1;
+	int[] destinationFloors = null;
 	boolean occupied = false;
 	EventNotifier notif;
-	
-	private Calendar cal; 
-	private SimpleDateFormat time;
+	Calendar cal;
+	SimpleDateFormat time;
 	
 	// TODO : populate and implement our doors/motors/buttons/lamps in our Elevators
 	Door door;
@@ -47,7 +46,7 @@ public class Elevator {
 		this.carNum = carNum;
 		this.destinationFloors = new int[numFloors];
 		this.notif = new EventNotifier(Scheduler.PORT, "ELEVATOR");
-		time = new SimpleDateFormat("HH:mm:ss.SSS");
+		this.time = new SimpleDateFormat("HH:mm:ss.SSS");
 	}
 	
 	// -- GETTERS -- //
@@ -68,6 +67,9 @@ public class Elevator {
 		return occupied;
 	}
 	
+
+	
+
 	/**
 	 * This is called when a floor opens a request for an elevator
 	 * and this car is chosen to service the request. It will 
@@ -77,46 +79,39 @@ public class Elevator {
 	 * @param floor the floor that has called the elevator.
 	 * @param dir the direction requested.
 	 */
+	
 	public void pickUpPerson(int floor, int dir) {
-		cal = Calendar.getInstance();
-		System.out.println("\nPICKING UP PERSON ON FLOOR " + floor);
-		Logger.write("\nPICKING UP PERSON ON FLOOR " + floor, elevatorTestLogFileName );
-		if(dir == 1)
-			Logger.write("\nCar " + carNum + " IS GOING UP PICKING UP PERSON ON FLOOR " + floor + " AT " + time.format(cal.getTime()) + "\n", "Logs/elevator.log");
-		else
-			Logger.write("\nCar " + carNum + " IS GOING DOWN PICKING UP PERSON ON FLOOR " + floor + " AT " + time.format(cal.getTime()) + "\n", "Logs/elevator.log");
-
-		occupied = true;
+		this.occupied = true;
 		
-		try {
-			// THIS IS WHERE WE WOULD IMPLEMENT TIMING FROM FLOOR TO FLOOR
-			
-			int time = Math.abs(onFloor - floor);
-			if(dir == 1) System.out.println("Going up to " + floor + " floor to pick up someone");
-			if(dir == 2) System.out.println("Going down to " + floor + " floor to pick up someone");
-			
-			
-			for(int i = 0; i < time; i ++) {
-				if(dir == 1) System.out.println("Current Floor " + onFloor ++);
-				if(dir == 2) System.out.println("Current FLoor " + onFloor --);
-				Thread.sleep(1000);
-			}
-			
-			System.out.println("We have arrived at floor " + floor);
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+		if (dir == 2) {
+			this.direction = 2;
+			cal = Calendar.getInstance();
+			System.out.println("Elevator" + Integer.toString(this.carNum) + " Going down to PICK UP to floor " + 
+			floor + " from floor " + Integer.toString(onFloor) + " at " + time.format(cal.getTime()));
+			Logger.write("Elevator" + Integer.toString(this.carNum) + " Going DOWN to PICK UP to floor " + 
+			floor + " from floor " + Integer.toString(onFloor) + " at " + time.format(cal.getTime()), "Logs/elevator.log");
+		}
+		else {
+			this.direction = 1;
+			cal = Calendar.getInstance();
+			System.out.println("Elevator" + Integer.toString(this.carNum) + " Going up to PICK UP to floor " + 
+			floor + " from floor " + Integer.toString(onFloor) + " at "  + time.format(cal.getTime()));
+			Logger.write("Elevator" + Integer.toString(this.carNum) + " Going UP to PICK UP to floor " + 
+			floor + " from floor " + Integer.toString(onFloor) + " at "  + time.format(cal.getTime()), "Logs/elevator.log");
 		}
 		
-		// set our new current floor and direction
-		this.onFloor = floor;
-		this.direction = dir;
-		// send notification to scheduler saying that we have arrived and which floor we are going to next
-		this.notif.sendMessage(new ElevatorMessage(ElevatorMessage.MessageType.ELEV_PICKUP, this.carNum, this.direction, this.onFloor));
+		int time = Math.abs(onFloor - floor) * 1000;
 		
 		
-		// this does nothing yet, eventually when we have the GUI it should show the doors opening
-		openDoors();
+		new java.util.Timer().schedule( 
+	        new java.util.TimerTask() {
+	            @Override
+	            public void run() {
+	                arrivePickUp(floor, dir);
+	            }
+	        }, 
+	        time
+		);
 	}
 	
 	/**
@@ -127,56 +122,84 @@ public class Elevator {
 	 * @param destination the floor we need to ride to.
 	 */
 	public void rideToFloor(int destination) {
-		cal = Calendar.getInstance();
-		System.out.println("\nTAKING PERSON TO FLOOR " + destination);
-		Logger.write("\nTAKING PERSON TO FLOOR " + destination, elevatorTestLogFileName );
-		Logger.write("\nCar " + carNum + " IS TAKING PERSON TO FLOOR " + destination + " AT " + time.format(cal.getTime()) + "\n", "Logs/elevator.log");
-		if (onFloor > destination) this.direction = 2;
-		else this.direction = 1;
-		try {
-			Thread.sleep(1000);
-			// TODO : Elevator timing
-			// THIS IS WHERE WE WOULD IMPLEMENT TIMING FROM FLOOR TO FLOOR
-			int time = Math.abs(onFloor - destination);
-			int floor = onFloor;
-			
-			if(direction == 1) System.out.println("Going up to requested floor " + destination);
-			if(direction == 2) System.out.println("Going down to requested floor " + destination);
-			
-			
-			for(int i = 0; i < time; i ++) {
-				if(direction == 1) System.out.println("Current Floor " + floor ++);
-				if(direction == 2) System.out.println("Current FLoor " + floor --);
-				Thread.sleep(1000);
-			}
-			
-			System.out.println("We have arrived at floor " + destination); 
-			
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		// set our new current floor to the floor we want to arrive at and our direction
-		Logger.write("\nCar " + carNum + " HAS TAKEN PERSON TO REQUESTED FLOOR " + destination + " AT " + time.format(cal.getTime()) + "\n", "Logs/elevator.log");
-		this.onFloor = destination;
 		
+		//setting the destination and printing when the elevator departs
+		if (onFloor > destination) {
+			this.direction = 2;
+			cal = Calendar.getInstance();
+			System.out.println("Elevator" + Integer.toString(this.carNum) + " Going DOWN to requested floor " + 
+			destination + " from floor" + Integer.toString(onFloor) + " at " + time.format(cal.getTime()));
+			Logger.write("Elevator" + Integer.toString(this.carNum) + " Going DOWN to requested floor " + 
+					destination + " from floor" + Integer.toString(onFloor) + " at " + time.format(cal.getTime()), "Logs/elevator.log");
+		}
+		else {
+			this.direction = 1;
+			cal = Calendar.getInstance();
+			System.out.println("Elevator" + Integer.toString(this.carNum) + " Going UP to requested floor " + 
+			destination + " from floor " + Integer.toString(onFloor) + " at "  + time.format(cal.getTime()));
+			Logger.write("Elevator" + Integer.toString(this.carNum) + " Going UP to requested floor " + 
+			destination + " from floor " + Integer.toString(onFloor) + " at "  + time.format(cal.getTime()), "Logs/elevator.log");
+		}
+		
+		int time = Math.abs(onFloor - destination) * 1000;
+		new java.util.Timer().schedule( 
+		        new java.util.TimerTask() {
+		            @Override
+		            public void run() {
+		                arriveRequest(destination);
+		            }
+		        }, 
+		        time
+		        
+		);
+		
+		
+	}
+	
+	
+	public void arriveRequest(int destination) {
+		
+		cal = Calendar.getInstance();
+		System.out.println("Elevator" + Integer.toString(this.carNum) + " Has arrived to floor" + destination + " at " + time.format(cal.getTime()));
+		Logger.write("Elevator" + Integer.toString(this.carNum) + " Has arrived to floor" + destination + " at " + time.format(cal.getTime()), "Logs/elevator.log");
+		// set our new current floor to the floor we want to arrive at and our direction
+		this.onFloor = destination;
 		// send notification to scheduler saying that we have arrived and that we have no pending destination
 		this.notif.sendMessage(new ElevatorMessage(ElevatorMessage.MessageType.ELEV_ARRIVAL, this.carNum, this.direction, this.onFloor));
 		occupied = false;
+		// this does nothing yet, eventually when we have the GUI it should show the doors opening
+		openDoors();
+		
+	}
+	
+	
+	public void arrivePickUp(int floor, int dir) {
+		
+		cal = Calendar.getInstance();
+		System.out.println("Elevator" + Integer.toString(this.carNum) + " Has arrived to floor " + floor + " at " + time.format(cal.getTime()));
+		Logger.write("Elevator" + Integer.toString(this.carNum) + " Has arrived to floor " + floor + " at " + time.format(cal.getTime()), "Logs/elevator.log");
+		// set our new current floor and direction
+		this.onFloor = floor;
+		this.direction = dir;
+		// send notification to scheduler saying that we have arrived and which floor we are going to next
+		this.notif.sendMessage(new ElevatorMessage(ElevatorMessage.MessageType.ELEV_PICKUP, this.carNum, this.direction, this.onFloor));
+		
 		
 		// this does nothing yet, eventually when we have the GUI it should show the doors opening
 		openDoors();
+		
 	}
+	
+	
+
+	
+	
 	
 	void openDoors() {
 		// open the doors
 	}
 	
-	public static void main(String[] args) {
-		Elevator ele = new Elevator(1, 5);
-		ele.pickUpPerson(2, 1);
-		ele.rideToFloor(3);
-	}
+
 	
 	
 }
