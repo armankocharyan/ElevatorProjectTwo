@@ -42,9 +42,10 @@ public class Scheduler {
 
 	public void startListen() throws InterruptedException {
 		// THIS ACTS AS A PRODUCER
+		cal = Calendar.getInstance();
 		System.out.println("SCHEDULER: Starting listener...");
 		Logger.write("SCHEDULER: Starting listener...", schedulerTestLogFileName);
-		Logger.write("SCHEDULER: Starting listener at " + time.format(cal.getTime()), "Log/scheduler.log");
+		Logger.write("SCHEDULER: Starting listener at " + time.format(cal.getTime()), "Logs/scheduler.log");
 		for (;;) {
 			ElevatorMessage msg = listener.waitForNotification();
 			switch (msg.getType()) {
@@ -137,6 +138,8 @@ public class Scheduler {
 	}
 
 	public static void main(String[] args) {
+		
+		Logger.clearAllLogFiles();
 		Scheduler s = new Scheduler(2);
 		s.start();
 	}

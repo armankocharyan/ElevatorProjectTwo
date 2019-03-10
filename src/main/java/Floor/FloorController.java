@@ -3,7 +3,7 @@ package Floor;
 import core.ElevatorMessage;
 import core.EventListener;
 import core.RequestData;
-
+import Logger.Logger;
 import java.util.ArrayList;
 
 import File.ReadFile;
@@ -112,6 +112,9 @@ public class FloorController {
 	}
 	
 	public static void main(String[] args) {
+		
+		
+		
 		FloorController c = new FloorController(8);
 		try {
 			c.start();
