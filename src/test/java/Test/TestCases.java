@@ -60,7 +60,7 @@ public class TestCases{
         t2.start(); 
 		Thread.sleep(1000);
         t3.start();
-        Thread.sleep(40000);
+        Thread.sleep(45000);
         
         
         
@@ -105,7 +105,7 @@ public class TestCases{
 	    ArrayList<String> elevatorTestLog = ReadFile.parseInput(Elevator.Elevator.elevatorTestLogFileName);
 	    boolean itIsThere = false;
 	    for(int i = 0; i < elevatorTestLog.size(); i++) {
-	    	if (elevatorTestLog.get(i).contains("PICKING UP PERSON ON FLOOR " + Integer.toString(inputData.get(0).getFloorNumber() ) )){
+	    	if (elevatorTestLog.get(i).contains("Going to requested floor " + Integer.toString(inputData.get(0).getfloorToGo() ) )){
 	    		itIsThere  = true;
 	    	}
 	    }
@@ -119,7 +119,7 @@ public class TestCases{
 		ArrayList<String> elevatorTestLog = ReadFile.parseInput(Elevator.Elevator.elevatorTestLogFileName);
 	    boolean itIsThere = false;
 	    for(int i = 0; i < elevatorTestLog.size(); i++) {
-	    	if (elevatorTestLog.get(i).contains("TAKING PERSON TO FLOOR " + Integer.toString(inputData.get(0).getfloorToGo() ))){
+	    	if (elevatorTestLog.get(i).contains("arrived to floor" + Integer.toString(inputData.get(0).getfloorToGo() ))){
 	    		itIsThere  = true;
 	    	}
 	    }

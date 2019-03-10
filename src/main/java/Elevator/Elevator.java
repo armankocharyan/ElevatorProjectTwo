@@ -90,6 +90,9 @@ public class Elevator {
 			floor + " from floor " + Integer.toString(onFloor) + " at " + time.format(cal.getTime()));
 			Logger.write("Elevator" + Integer.toString(this.carNum) + " Going to PICK UP to floor " +
 			floor + " from floor " + Integer.toString(onFloor) + " at " + time.format(cal.getTime()), "Logs/elevator.log");
+			
+			Logger.write("Elevator" + Integer.toString(this.carNum) + " Going to PICK UP to floor " +
+					floor + " from floor " + Integer.toString(onFloor) + " at " + time.format(cal.getTime()), "TestLogs/elevator.testing");
 		}
 		else {
 			this.direction = 1;
@@ -98,6 +101,9 @@ public class Elevator {
 			floor + " from floor " + Integer.toString(onFloor) + " at "  + time.format(cal.getTime()));
 			Logger.write("Elevator" + Integer.toString(this.carNum) + " Going to PICK UP to floor " +
 			floor + " from floor " + Integer.toString(onFloor) + " at "  + time.format(cal.getTime()), "Logs/elevator.log");
+			
+			Logger.write("Elevator" + Integer.toString(this.carNum) + " Going to PICK UP to floor " +
+					floor + " from floor " + Integer.toString(onFloor) + " at "  + time.format(cal.getTime()), "TestLogs/elevator.testing");
 		}
 
 		int time = Math.abs(onFloor - floor) * timeBetweenFloors;
@@ -131,6 +137,9 @@ public class Elevator {
 			destination + " from floor" + Integer.toString(onFloor) + " at " + time.format(cal.getTime()));
 			Logger.write("Elevator" + Integer.toString(this.carNum) + " Going to requested floor " +
 					destination + " from floor" + Integer.toString(onFloor) + " at " + time.format(cal.getTime()), "Logs/elevator.log");
+			
+			Logger.write("Elevator" + Integer.toString(this.carNum) + " Going to requested floor " +
+					destination + " from floor" + Integer.toString(onFloor) + " at " + time.format(cal.getTime()), "TestLogs/elevator.testing");
 		}
 		else {
 			this.direction = 1;
@@ -139,6 +148,9 @@ public class Elevator {
 			destination + " from floor " + Integer.toString(onFloor) + " at "  + time.format(cal.getTime()));
 			Logger.write("Elevator" + Integer.toString(this.carNum) + " Going to requested floor " +
 			destination + " from floor " + Integer.toString(onFloor) + " at "  + time.format(cal.getTime()), "Logs/elevator.log");
+			
+			Logger.write("Elevator" + Integer.toString(this.carNum) + " Going to requested floor " +
+					destination + " from floor " + Integer.toString(onFloor) + " at "  + time.format(cal.getTime()), "TestLogs/elevator.testing");
 		}
 
 		int time = Math.abs(onFloor - destination) * timeBetweenFloors;
@@ -161,6 +173,7 @@ public class Elevator {
 		cal = Calendar.getInstance();
 		System.out.println("Elevator" + Integer.toString(this.carNum) + " Has arrived to floor" + destination + " at " + time.format(cal.getTime()));
 		Logger.write("Elevator" + Integer.toString(this.carNum) + " Has arrived to floor" + destination + " at " + time.format(cal.getTime()), "Logs/elevator.log");
+		Logger.write("Elevator" + Integer.toString(this.carNum) + " Has arrived to floor" + destination + " at " + time.format(cal.getTime()), "TestLogs/elevator.testing");
 		// set our new current floor to the floor we want to arrive at and our direction
 		this.onFloor = destination;
 		// send notification to scheduler saying that we have arrived and that we have no pending destination
@@ -177,6 +190,7 @@ public class Elevator {
 		cal = Calendar.getInstance();
 		System.out.println("Elevator" + Integer.toString(this.carNum) + " Has arrived to floor " + floor + " at " + time.format(cal.getTime()));
 		Logger.write("Elevator" + Integer.toString(this.carNum) + " Has arrived to floor " + floor + " at " + time.format(cal.getTime()), "Logs/elevator.log");
+		Logger.write("Elevator" + Integer.toString(this.carNum) + " Has arrived to floor " + floor + " at " + time.format(cal.getTime()), "TestLogs/elevator.testing");
 		// set our new current floor and direction
 		this.onFloor = floor;
 		this.direction = dir;
