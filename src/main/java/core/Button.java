@@ -1,18 +1,31 @@
 package core;
 
+import Logger.Logger;
+
+import java.sql.Time;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
+
 public class Button {
 
+	private Calendar cal; 
+	private SimpleDateFormat time;
 	boolean pressed = false;
 	boolean active = true;
 	String name = "";
 	
 	public Button(String s, boolean active) {
+		time = new SimpleDateFormat("HH:mm:ss.SSS");
 		this.active = active;
 		this.pressed = false;
 		this.name = s;
 	}
 	
 	public void setPressed(boolean pressed) {
+		
+		cal = Calendar.getInstance();
+		Logger.write("Button Pressed " + time.format(cal.getTime()) , "Logs/button.log");
 		this.pressed = pressed;
 		if (pressed) System.out.println(name+" PRESSED.");
 		else System.out.println(name+" UNPRESSED.");
@@ -31,5 +44,12 @@ public class Button {
 	public boolean isActive() {
 		return this.active;
 	}
+public static void main(String[] args) {
+	
+	Button btn = new Button ("Button", false);
+	btn.setPressed(true);
+
+	}
+	
 	
 }
