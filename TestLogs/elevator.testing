@@ -14,3 +14,22 @@ Elevator1 Has arrived to floor2 at 23:12:56.791
 Elevator0 Has arrived to floor 1 at 23:13:05.722
 Elevator0 Going to requested floor 7 from floor 1 at 23:13:05.739
 Elevator0 Has arrived to floor7 at 23:13:23.746
+Elevator0 Going to PICK UP to floor 7 from floor 0 at 06:19:58.811
+Elevator0 Has arrived to floor 7 at 06:20:47.818
+Elevator0 Going to requested floor 1 from floor7 at 06:20:47.836
+Elevator0 Going to PICK UP to floor 0 from floor 0 at 11:25:07.264
+Elevator0 Has arrived to floor 0 at 11:25:07.272
+Elevator0 Going to requested floor 4 from floor 0 at 11:25:07.289
+Elevator1 Going to PICK UP to floor 2 from floor 0 at 11:25:07.297
+Elevator1 Has arrived to floor 2 at 11:25:13.307
+Elevator1 Going to requested floor 3 from floor 2 at 11:25:13.329
+Elevator1 Has arrived to floor3 at 11:25:16.334
+Elevator1 Going to PICK UP to floor 3 from floor 3 at 11:25:16.340
+Elevator1 Has arrived to floor 3 at 11:25:16.346
+Elevator1 Going to requested floor 2 from floor3 at 11:25:16.367
+Elevator0 Has arrived to floor4 at 11:25:19.295
+Elevator0 Going to PICK UP to floor 1 from floor 4 at 11:25:19.301
+Elevator1 Has arrived to floor2 at 11:25:19.373
+Elevator0 Has arrived to floor 1 at 11:25:28.308
+Elevator0 Going to requested floor 7 from floor 1 at 11:25:28.328
+Elevator0 Has arrived to floor7 at 11:25:46.334
