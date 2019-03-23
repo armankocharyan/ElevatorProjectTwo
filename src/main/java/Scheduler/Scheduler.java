@@ -86,7 +86,7 @@ public class Scheduler {
 				                }
 				            }
 				        },
-				        24000
+				        30000
 				);
 				
 				// the target address ("") is empty for now
@@ -156,7 +156,7 @@ public class Scheduler {
 			                }
 			            }
 			        },
-			        24000
+			        30000
 			);
 			
 		}
