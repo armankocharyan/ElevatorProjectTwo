@@ -8,6 +8,16 @@ open eclipse ide and import project as a maven project
 2) right click scheduler and click run as a java program
 3) right click floor and click run as a java program
 
+To run on multiple computers:
+open eclipse ide and import project as a maven project on both machines
+- open the subsystems directory
+1) in the core package run the IPGetter.java file on both machines
+2) in the scheduler package open the Scheduler.java file on machine 1, set the public static final String ADDRESS = ""; to the IP address of machine 2
+	add it inside the ""
+3) open the Floor.java file from floor package and Elevator.java file from the elevator package, and add machine 1's IP address to the public static final String ADDRESS = ""; variable in those files
+4) run Scheduler.java on machine 1
+5) run ElevatorController.java followed by FloorController.java on machine 2
+
 To run the tests 
 - run CucumberRunner.java as a junit test
 
