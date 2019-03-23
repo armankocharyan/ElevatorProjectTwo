@@ -106,7 +106,7 @@ public class Scheduler {
 					long end = System.nanoTime();
 					double timeElapsed = (end - startTimesReq[msg.getFloor()])/1000000.00;
 					System.out.println("TIME TO PICK UP: " + timeElapsed + " ms");
-					Logger.write("Time elapsed since Pickup " + msg.getFloor() +": " + timeElapsed + "\n", "timer/timeElapsed.log");
+					Logger.write("Time elapsed since Pickup " + msg.getFloor() +": " + timeElapsed, "timer/timeElapsed.log");
 					requestNotServed[msg.getFloor()] = false;
 				}
 				// the target address ("") is empty for now
@@ -118,7 +118,7 @@ public class Scheduler {
 					passStuck[msg.getFloor()] = false;
 					long end = System.nanoTime();
 					double timeElapsed = (end - startTimesTrip[msg.getFloor()])/1000000.00;
-					Logger.write("Time elapsed since For ride " + msg.getFloor() + ": "+ timeElapsed + "\n", "timer/timeElapsed.log");
+					Logger.write("Time elapsed since Ride " + msg.getFloor() + ": "+ timeElapsed, "timer/timeElapsed.log");
 				}
 				
 				// the target address ("") is empty for now
