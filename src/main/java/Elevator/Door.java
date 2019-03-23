@@ -23,12 +23,14 @@ public class Door {
 	}
 	
 	public void open() {
+			cal = Calendar.getInstance();
 			Logger.write("DOOR IS OPEN AT " + time.format(cal.getTime()) + "\n", "Logs/door.log");
 		
 		this.isOpen = true;
 	}
 	
 	public void close() {
+		cal = Calendar.getInstance();
 		Logger.write("DOOR IS CLOSED AT " + time.format(cal.getTime()) + "\n", "Logs/door.log");
 		this.isOpen = false;
 	}

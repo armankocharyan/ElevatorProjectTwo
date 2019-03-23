@@ -10,7 +10,8 @@ import Scheduler.Scheduler;
 public class Floor{
 	// -- STATIC VARIABLES -- //
 	public static final String floorTestLogFileName = "TestLogs/floor.testing";
-	public static final String ADDRESS = ""; //Change this to the address of the scheduler PC
+	
+	public static final String ADDRESS = ""; //Change this to the address of the scheduler PC. Leave it blank ("") to run locally
 	
 	
 	int floorNum = -1;	

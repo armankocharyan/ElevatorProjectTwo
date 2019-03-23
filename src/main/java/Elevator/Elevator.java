@@ -18,7 +18,7 @@ import Scheduler.Scheduler;
 public class Elevator {
 	// -- STATIC VARIABLES -- //
 	public static final String elevatorTestLogFileName = "TestLogs/elevator.testing";
-	public static final String ADDRESS = ""; //Change this to the address of the scheduler PC
+	public static final String ADDRESS = ""; //Change this to the address of the scheduler PC. Leave it blank ("") to run locally
 
 	// -- INSTANCE VARIABLES -- //
 	int numFloors;
@@ -48,6 +48,7 @@ public class Elevator {
 		this.destinationFloors = new int[numFloors];
 		this.notif = new EventNotifier(Scheduler.PORT, "ELEVATOR");
 		this.time = new SimpleDateFormat("HH:mm:ss.SSS");
+		door = new Door(false);
 	}
 
 	// -- GETTERS -- //
@@ -146,7 +147,6 @@ public class Elevator {
 		        time
 		);
 
-
 	}
 
 
@@ -163,7 +163,7 @@ public class Elevator {
 		this.notif.sendMessage(new ElevatorMessage(ElevatorMessage.MessageType.ELEV_ARRIVAL, this.carNum, this.direction, this.onFloor), ADDRESS);
 		occupied = false;
 		// this does nothing yet, eventually when we have the GUI it should show the doors opening
-		openDoors();
+		openDoors(2000);
 
 	}
 
@@ -183,13 +183,57 @@ public class Elevator {
 
 
 		// this does nothing yet, eventually when we have the GUI it should show the doors opening
-		openDoors();
+		openDoors(2000);
 
 	}
 
 
 
-	void openDoors() {
+	void openDoors(int deltaTime) {
+		
+		cal = Calendar.getInstance();
+		System.out.println("opening doors at: " + time.format(cal.getTime()));
+		//Waiting for door to open**********************************************
+		new java.util.Timer().schedule(
+		        new java.util.TimerTask() {
+		            @Override
+		            public void run() {
+		            	cal = Calendar.getInstance();
+		            	System.out.println("waitinging to enter: " + time.format(cal.getTime()));
+		            	door.open();
+		            	//Waiting for someone to enter**********************************************
+		            	new java.util.Timer().schedule(
+		        		        new java.util.TimerTask() {
+		        		            @Override
+		        		            public void run() {
+		        		            	door.open();
+		        		            	
+		        		            	//Waiting for door to close**********************************************
+		        		            	new java.util.Timer().schedule(
+		        		        		        new java.util.TimerTask() {
+		        		        		            @Override
+		        		        		            public void run() {
+		        		        		            	System.out.println("waitinging to enter");
+		        		        		            	cal = Calendar.getInstance();
+		        		        		            	door.close();
+		        		        		            	
+		        		        		            	
+		        		        		            }
+		        		        		        },2000
+		        		        			);
+		        		            	
+		        		            	
+		        		            }
+		        		        },deltaTime
+		        			);
+		            	
+		            	
+		            }
+		        },2000
+			);
+		
+		
+		
 		// open the doors
 	}
 
