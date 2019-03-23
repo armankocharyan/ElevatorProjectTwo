@@ -17,6 +17,7 @@ import Logger.Logger;
 public class Scheduler {
 
 	public static final int PORT = 24;
+	public static final String ADDRESS = ""; //change this to the floor and elevator PC Address
 
 	EventListener listener;
 	public static final String schedulerTestLogFileName = "TestLogs/scheduler.testing";
@@ -87,7 +88,9 @@ public class Scheduler {
 				        },
 				        24000
 				);
-				this.elevatorNotifier.sendMessage(msg);
+				
+				// the target address ("") is empty for now
+				this.elevatorNotifier.sendMessage(msg, ADDRESS);
 				
 				break;
 			case ELEV_PICKUP:
@@ -95,14 +98,17 @@ public class Scheduler {
 				synchronized(this) {
 					requestNotServed[msg.getFloor()] = false;
 				}
-				this.floorNotifier.sendMessage(msg);
+				// the target address ("") is empty for now
+				this.floorNotifier.sendMessage(msg, ADDRESS);
 				break;
 			case ELEV_ARRIVAL:
 				System.out.println("\nSCHEDULER: RECEIVED ELEVATOR ARRIVAL NOTIFICATION " + msg);
 				synchronized(this) {
 					passStuck[msg.getFloor()] = false;
 				}
-				this.floorNotifier.sendMessage(msg);
+				
+				// the target address ("") is empty for now
+				this.floorNotifier.sendMessage(msg, ADDRESS);
 				synchronized (this) {
 					processing -= 1;
 
@@ -136,7 +142,8 @@ public class Scheduler {
 			int nFloor = msg.getId();
 			requestNotServed[nFloor] = true;
 			// send notification to elevatorController that someone has requested a car
-			this.elevatorNotifier.sendMessage(msg);
+			// the target address ("") is empty for now
+			this.elevatorNotifier.sendMessage(msg, ADDRESS);
 			
 			new java.util.Timer().schedule(
 			        new java.util.TimerTask() {

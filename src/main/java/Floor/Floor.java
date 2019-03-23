@@ -10,6 +10,8 @@ import Scheduler.Scheduler;
 public class Floor{
 	// -- STATIC VARIABLES -- //
 	public static final String floorTestLogFileName = "TestLogs/floor.testing";
+	public static final String ADDRESS = ""; //Change this to the address of the scheduler PC
+	
 	
 	int floorNum = -1;	
 	boolean highestFloor = false;  // highest floors have no up requests
@@ -66,7 +68,8 @@ public class Floor{
 		reqBtnUp.setPressed(true);
 		
 		// send notification to scheduler
-		this.notifier.sendMessage(new ElevatorMessage(ElevatorMessage.MessageType.ELEV_REQUEST, this.floorNum, 1));
+		// the target address ("") is empty for now
+		this.notifier.sendMessage(new ElevatorMessage(ElevatorMessage.MessageType.ELEV_REQUEST, this.floorNum, 1), ADDRESS);
 	}
 	
 	public void reqDown(int num) {
@@ -85,8 +88,8 @@ public class Floor{
 		reqLampDown.setOn(true);
 		reqBtnDown.setPressed(true);
 		
-		
-		this.notifier.sendMessage(new ElevatorMessage(ElevatorMessage.MessageType.ELEV_REQUEST, this.floorNum, 2));
+		// the target address ("") is empty for now
+		this.notifier.sendMessage(new ElevatorMessage(ElevatorMessage.MessageType.ELEV_REQUEST, this.floorNum, 2), ADDRESS);
 	}
 	
 	public void resetDownBtn() {
@@ -126,7 +129,8 @@ public class Floor{
 		}
 		System.out.println("\nPASSENGER ON FLOOR "+ floorNum + " ENTERED ELEVATOR CAR " + carNum + " TO FLOOR " + requestFloor);
 		Logger.Logger.write("\nPASSENGER ON FLOOR "+ floorNum + " ENTERED ELEVATOR CAR " + carNum + " TO FLOOR " + requestFloor, floorTestLogFileName);
-		this.notifier.sendMessage(new ElevatorMessage(ElevatorMessage.MessageType.PASSENGER_ENTER, this.floorNum, carNum, this.requestFloor));
+		// the target address ("") is empty for now
+		this.notifier.sendMessage(new ElevatorMessage(ElevatorMessage.MessageType.PASSENGER_ENTER, this.floorNum, carNum, this.requestFloor), ADDRESS);
 		this.requestFloor = -1;
 	}
 }

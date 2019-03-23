@@ -33,3 +33,35 @@ Elevator1 Has arrived to floor2 at 11:25:19.373
 Elevator0 Has arrived to floor 1 at 11:25:28.308
 Elevator0 Going to requested floor 7 from floor 1 at 11:25:28.328
 Elevator0 Has arrived to floor7 at 11:25:46.334
+Elevator0 Going to PICK UP to floor 0 from floor 0 at 18:44:12.615
+Elevator0 Has arrived to floor 0 at 18:44:12.622
+Elevator0 Going to requested floor 4 from floor0 at 18:44:12.640
+Elevator1 Going to PICK UP to floor 2 from floor 0 at 18:44:12.648
+Elevator1 Has arrived to floor 2 at 18:44:18.653
+Elevator1 Going to requested floor 3 from floor2 at 18:44:18.673
+Elevator1 Has arrived to floor3 at 18:44:21.678
+Elevator1 Going to PICK UP to floor 3 from floor 3 at 18:44:21.684
+Elevator1 Has arrived to floor 3 at 18:44:21.689
+Elevator1 Going to requested floor 2 from floor3 at 18:44:21.705
+Elevator0 Has arrived to floor4 at 18:44:24.645
+Elevator0 Going to PICK UP to floor 1 from floor 4 at 18:44:24.651
+Elevator1 Has arrived to floor2 at 18:44:24.711
+Elevator0 Has arrived to floor 1 at 18:44:33.656
+Elevator0 Going to requested floor 7 from floor1 at 18:44:33.672
+Elevator0 Has arrived to floor7 at 18:44:51.677
+Elevator0 Going to PICK UP to floor 0 from floor 0 at 22:04:50.295
+Elevator0 Has arrived to floor 0 at 22:04:50.302
+Elevator0 Going to requested floor 4 from floor0 at 22:04:50.318
+Elevator1 Going to PICK UP to floor 2 from floor 0 at 22:04:50.330
+Elevator1 Has arrived to floor 2 at 22:04:56.335
+Elevator1 Going to requested floor 3 from floor2 at 22:04:56.358
+Elevator1 Has arrived to floor3 at 22:04:59.364
+Elevator1 Going to PICK UP to floor 3 from floor 3 at 22:04:59.371
+Elevator1 Has arrived to floor 3 at 22:04:59.376
+Elevator1 Going to requested floor 2 from floor3 at 22:04:59.397
+Elevator0 Has arrived to floor4 at 22:05:02.323
+Elevator0 Going to PICK UP to floor 1 from floor 4 at 22:05:02.329
+Elevator1 Has arrived to floor2 at 22:05:02.404
+Elevator0 Has arrived to floor 1 at 22:05:11.336
+Elevator0 Going to requested floor 7 from floor1 at 22:05:11.354
+Elevator0 Has arrived to floor7 at 22:05:29.359

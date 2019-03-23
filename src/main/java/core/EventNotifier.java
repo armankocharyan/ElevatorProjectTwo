@@ -40,12 +40,28 @@ public class EventNotifier {
 	 * 
 	 * @param msg the ElevatorMessage instance we want to send
 	 */
-	public void sendMessage(ElevatorMessage msg) {
+	public void sendMessage(ElevatorMessage msg, String address) {
 		try {
 			// Constructs and opens a new packet/socket 
 			
 			DatagramSocket sendSocket = new DatagramSocket();
+			
+			
+			//inter-computer communication
 			DatagramPacket sendPacket = new DatagramPacket(msg.getBytes(), ElevatorMessage.SIZE, localhost, this.PORT);
+			
+			if(!address.equals("")) {
+				
+				InetAddress targetAddress = null;
+				try {
+					targetAddress = InetAddress.getByName(address);
+				} catch (UnknownHostException e) {
+					e.printStackTrace();
+				}
+				sendPacket = new DatagramPacket(msg.getBytes(), ElevatorMessage.SIZE, targetAddress, this.PORT);
+			}
+				
+			
 			System.out.print(name);
 			System.out.println(": SENDING EVENT INFORMATION" + msg);
 			try {

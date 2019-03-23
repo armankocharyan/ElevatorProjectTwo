@@ -2,6 +2,8 @@ package File;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
@@ -41,7 +43,7 @@ public class ReadFile {
 			
 			for(int i = 0; i < parsedData.size(); i++) {
 				ArrayList<String> line = ReadFile.parseInputLine(parsedData.get(i));
-				String tempTime = line.get(0);
+				String tempTime = line.get(0);  //delta time
 				
 				if(line.size() != 4) {
 					System.out.println("INVALID LINE");
@@ -81,11 +83,8 @@ public class ReadFile {
 			
 		}
 		
-		public static void main(String[] args) {
-			ArrayList<RequestData> data = getData("inputFile.txt");
+		public static void main(String[] args) throws UnknownHostException {
 			
-			for(int i = 0; i < data.size(); i ++) {
-				System.out.println(data.get(i));
-			}
+			
 		}
 }

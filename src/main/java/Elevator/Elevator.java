@@ -18,6 +18,7 @@ import Scheduler.Scheduler;
 public class Elevator {
 	// -- STATIC VARIABLES -- //
 	public static final String elevatorTestLogFileName = "TestLogs/elevator.testing";
+	public static final String ADDRESS = ""; //Change this to the address of the scheduler PC
 
 	// -- INSTANCE VARIABLES -- //
 	int numFloors;
@@ -79,32 +80,22 @@ public class Elevator {
 	 * @param floor the floor that has called the elevator.
 	 * @param dir the direction requested.
 	 */
-
 	public void pickUpPerson(int floor, int dir) {
 		this.occupied = true;
-
-		if (dir == 2) {
+		
+		if (dir == 2)
 			this.direction = 2;
-			cal = Calendar.getInstance();
-			System.out.println("Elevator" + Integer.toString(this.carNum) + " Going to PICK UP to floor " +
-			floor + " from floor " + Integer.toString(onFloor) + " at " + time.format(cal.getTime()));
-			Logger.write("Elevator" + Integer.toString(this.carNum) + " Going to PICK UP to floor " +
-			floor + " from floor " + Integer.toString(onFloor) + " at " + time.format(cal.getTime()), "Logs/elevator.log");
-			
-			Logger.write("Elevator" + Integer.toString(this.carNum) + " Going to PICK UP to floor " +
-					floor + " from floor " + Integer.toString(onFloor) + " at " + time.format(cal.getTime()), "TestLogs/elevator.testing");
-		}
-		else {
+		else 
 			this.direction = 1;
-			cal = Calendar.getInstance();
-			System.out.println("Elevator" + Integer.toString(this.carNum) + " Going to PICK UP to floor " +
-			floor + " from floor " + Integer.toString(onFloor) + " at "  + time.format(cal.getTime()));
-			Logger.write("Elevator" + Integer.toString(this.carNum) + " Going to PICK UP to floor " +
-			floor + " from floor " + Integer.toString(onFloor) + " at "  + time.format(cal.getTime()), "Logs/elevator.log");
-			
-			Logger.write("Elevator" + Integer.toString(this.carNum) + " Going to PICK UP to floor " +
-					floor + " from floor " + Integer.toString(onFloor) + " at "  + time.format(cal.getTime()), "TestLogs/elevator.testing");
-		}
+
+		cal = Calendar.getInstance();
+		System.out.println("Elevator" + Integer.toString(this.carNum) + " Going to PICK UP to floor " +
+		floor + " from floor " + Integer.toString(onFloor) + " at " + time.format(cal.getTime()));
+		Logger.write("Elevator" + Integer.toString(this.carNum) + " Going to PICK UP to floor " +
+		floor + " from floor " + Integer.toString(onFloor) + " at " + time.format(cal.getTime()), "Logs/elevator.log");
+		
+		Logger.write("Elevator" + Integer.toString(this.carNum) + " Going to PICK UP to floor " +
+				floor + " from floor " + Integer.toString(onFloor) + " at " + time.format(cal.getTime()), "TestLogs/elevator.testing");
 
 		int time = (Math.abs(onFloor - floor)) * timeBetweenFloors;
 
@@ -130,28 +121,19 @@ public class Elevator {
 	public void rideToFloor(int destination) {
 
 		//setting the destination and printing when the elevator departs
-		if (onFloor > destination) {
+		if (onFloor > destination) 
 			this.direction = 2;
-			cal = Calendar.getInstance();
-			System.out.println("Elevator" + Integer.toString(this.carNum) + " Going to requested floor " +
-			destination + " from floor" + Integer.toString(onFloor) + " at " + time.format(cal.getTime()));
-			Logger.write("Elevator" + Integer.toString(this.carNum) + " Going to requested floor " +
-					destination + " from floor" + Integer.toString(onFloor) + " at " + time.format(cal.getTime()), "Logs/elevator.log");
-			
-			Logger.write("Elevator" + Integer.toString(this.carNum) + " Going to requested floor " +
-					destination + " from floor" + Integer.toString(onFloor) + " at " + time.format(cal.getTime()), "TestLogs/elevator.testing");
-		}
-		else {
+		else 
 			this.direction = 1;
-			cal = Calendar.getInstance();
-			System.out.println("Elevator" + Integer.toString(this.carNum) + " Going to requested floor " +
-			destination + " from floor " + Integer.toString(onFloor) + " at "  + time.format(cal.getTime()));
-			Logger.write("Elevator" + Integer.toString(this.carNum) + " Going to requested floor " +
-			destination + " from floor " + Integer.toString(onFloor) + " at "  + time.format(cal.getTime()), "Logs/elevator.log");
-			
-			Logger.write("Elevator" + Integer.toString(this.carNum) + " Going to requested floor " +
-					destination + " from floor " + Integer.toString(onFloor) + " at "  + time.format(cal.getTime()), "TestLogs/elevator.testing");
-		}
+		
+		cal = Calendar.getInstance();
+		System.out.println("Elevator" + Integer.toString(this.carNum) + " Going to requested floor " +
+		destination + " from floor" + Integer.toString(onFloor) + " at " + time.format(cal.getTime()));
+		Logger.write("Elevator" + Integer.toString(this.carNum) + " Going to requested floor " +
+				destination + " from floor" + Integer.toString(onFloor) + " at " + time.format(cal.getTime()), "Logs/elevator.log");
+		
+		Logger.write("Elevator" + Integer.toString(this.carNum) + " Going to requested floor " +
+				destination + " from floor" + Integer.toString(onFloor) + " at " + time.format(cal.getTime()), "TestLogs/elevator.testing");
 
 		int time = Math.abs(onFloor - destination) * timeBetweenFloors;
 		new java.util.Timer().schedule(
@@ -177,7 +159,8 @@ public class Elevator {
 		// set our new current floor to the floor we want to arrive at and our direction
 		this.onFloor = destination;
 		// send notification to scheduler saying that we have arrived and that we have no pending destination
-		this.notif.sendMessage(new ElevatorMessage(ElevatorMessage.MessageType.ELEV_ARRIVAL, this.carNum, this.direction, this.onFloor));
+		// the target address ("") is empty for now
+		this.notif.sendMessage(new ElevatorMessage(ElevatorMessage.MessageType.ELEV_ARRIVAL, this.carNum, this.direction, this.onFloor), ADDRESS);
 		occupied = false;
 		// this does nothing yet, eventually when we have the GUI it should show the doors opening
 		openDoors();
@@ -195,7 +178,8 @@ public class Elevator {
 		this.onFloor = floor;
 		this.direction = dir;
 		// send notification to scheduler saying that we have arrived and which floor we are going to next
-		this.notif.sendMessage(new ElevatorMessage(ElevatorMessage.MessageType.ELEV_PICKUP, this.carNum, this.direction, this.onFloor));
+		// the target address ("") is empty for now
+		this.notif.sendMessage(new ElevatorMessage(ElevatorMessage.MessageType.ELEV_PICKUP, this.carNum, this.direction, this.onFloor), ADDRESS);
 
 
 		// this does nothing yet, eventually when we have the GUI it should show the doors opening
