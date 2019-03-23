@@ -17,13 +17,15 @@ import Logger.Logger;
 public class Scheduler {
 
 	public static final int PORT = 24;
-	public static final String ADDRESS = ""; //Change this to the address of the floor and elevator PC. Leave it blank ("") to run locally
+	public static final String ADDRESS = "172.17.70.139"; //Change this to the address of the floor and elevator PC. Leave it blank ("") to run locally
 
 	EventListener listener;
 	public static final String schedulerTestLogFileName = "TestLogs/scheduler.testing";
 	EventNotifier elevatorNotifier;
 	EventNotifier floorNotifier;
 	
+	long[] startTimesReq;
+	long[] startTimesTrip;
 
 	private Calendar cal; 
 	private SimpleDateFormat time;
@@ -50,6 +52,8 @@ public class Scheduler {
 			passStuck[i] = false;
 		}
 
+		startTimesReq = new long[numFloors];
+		startTimesTrip = new long[numFloors];
 	}
 
 	public void startListen() throws InterruptedException {
@@ -63,6 +67,7 @@ public class Scheduler {
 			switch (msg.getType()) {
 			case ELEV_REQUEST:
 				System.out.println("\nSCHEDULER: RECEIVED ELEVATOR REQUEST " + msg);
+				
 				synchronized (this) {
 					// when a person requests an elevator, add that request to our queue of requests
 					queue.add(msg);
@@ -74,9 +79,11 @@ public class Scheduler {
 			case PASSENGER_ENTER:
 				System.out.println("\nSCHEDULER: RECEIVED PASSENGER ENTER NOTIFICATION " + msg);
 				synchronized(this) {
-					passStuck[msg.getId()] = true;
+					passStuck[msg.getRequestedFloor()] = true;
+					startTimesTrip[msg.getRequestedFloor()] = System.nanoTime();
+
 				}
-				int nfloor = msg.getId();
+				int nfloor = msg.getRequestedFloor();
 				new java.util.Timer().schedule(
 				        new java.util.TimerTask() {
 				            @Override
@@ -96,6 +103,10 @@ public class Scheduler {
 			case ELEV_PICKUP:
 				System.out.println("\nSCHEDULER: RECEIVED ELEVATOR PICKUP NOTIFICATION " + msg);
 				synchronized(this) {
+					long end = System.nanoTime();
+					double timeElapsed = (end - startTimesReq[msg.getFloor()])/1000000.00;
+					System.out.println("TIME TO PICK UP: " + timeElapsed + " ms");
+					Logger.write("Time elapsed since Pickup " + msg.getFloor() +": " + timeElapsed + "\n", "timer/timeElapsed.log");
 					requestNotServed[msg.getFloor()] = false;
 				}
 				// the target address ("") is empty for now
@@ -105,6 +116,9 @@ public class Scheduler {
 				System.out.println("\nSCHEDULER: RECEIVED ELEVATOR ARRIVAL NOTIFICATION " + msg);
 				synchronized(this) {
 					passStuck[msg.getFloor()] = false;
+					long end = System.nanoTime();
+					double timeElapsed = (end - startTimesTrip[msg.getFloor()])/1000000.00;
+					Logger.write("Time elapsed since For ride " + msg.getFloor() + ": "+ timeElapsed + "\n", "timer/timeElapsed.log");
 				}
 				
 				// the target address ("") is empty for now
@@ -141,6 +155,8 @@ public class Scheduler {
 			
 			int nFloor = msg.getId();
 			requestNotServed[nFloor] = true;
+			startTimesReq[nFloor] = System.nanoTime();
+			
 			// send notification to elevatorController that someone has requested a car
 			// the target address ("") is empty for now
 			this.elevatorNotifier.sendMessage(msg, ADDRESS);
