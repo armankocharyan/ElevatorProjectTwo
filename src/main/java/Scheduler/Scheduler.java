@@ -22,9 +22,12 @@ public class Scheduler {
 	private Calendar cal;
 	private SimpleDateFormat time;
 	
-	Queue<ElevatorMessage> queue = new LinkedList<ElevatorMessage>();
+	LinkedList<ArrayList<Integer>> queue = new LinkedList<ArrayList<Integer>>();
 	HashMap<Integer, Integer> reqUp = new HashMap<Integer, Integer>();
 	HashMap<Integer, Integer> reqDown = new HashMap<Integer, Integer>();
+	 
+	HashMap<Integer, Integer> processedUp = new HashMap<Integer, Integer>();
+	HashMap<Integer, Integer> processedDown = new HashMap<Integer, Integer>();
 	
 	int processing = 0;
 
@@ -43,6 +46,7 @@ public class Scheduler {
 			switch (msg.getType()) {
 			case EMPTY:
 				System.out.println("\nEMPTY ELEVATOR" + msg);
+				
 				synchronized (this) {
 					processing -= 1;
 
@@ -57,19 +61,12 @@ public class Scheduler {
 				int to = msg.getData().get(1);
 				Constants.DIR direction = Constants.DIR.fromCode(msg.getData().get(0));
 				
-				if (direction == Constants.DIR.UP) {
-					synchronized (this) {
-						reqUp.put(from, to);
-						notifyAll();
-					}
-				} else {
-					synchronized (this) {
-						reqDown.put(from, to);
-						notifyAll();
-					}
-				}
 				synchronized(this) {
-					queue.add(msg);
+					ArrayList<Integer> gg = new ArrayList<Integer>();
+					gg.add(from);
+					gg.add(to);
+					gg.add(direction.getCode());
+					queue.add(gg);
 					notifyAll();
 				}
 
@@ -83,28 +80,76 @@ public class Scheduler {
 				EventNotifier notif = new EventNotifier(msg.PORT, "RETURN MSG");
 				boolean stop = false;
 				int floor = -1;
+				
+				
+				
 				if (dir == Constants.DIR.UP) {
-					if (reqUp.containsKey(currFloor)) {
+					
+					if(reqUp.containsKey(currFloor)) {
 						stop = true;
 						floor = reqUp.get(currFloor);
-						synchronized (this) {
-							reqUp.remove(currFloor);
-							queue.removeIf(x -> ((x.getId() == currFloor) && (Constants.DIR.fromCode(x.getData().get(0)) == dir)));
+						reqUp.remove(currFloor);
+					}
+					
+					if(!stop) {
+						for(int i=0; i<queue.size(); i++ ) {
+							ArrayList<Integer> curr = queue.get(i);
+							if ((curr.get(0) == currFloor) && (curr.get(2) == 1)) {
+								synchronized(this) {
+									queue.remove(i);
+								}
+								stop = true;
+								floor = curr.get(1);
+								break;
+							}
 						}
 					}
-				} else if (dir == Constants.DIR.DOWN) {
-					if (reqDown.containsKey(currFloor)) {
+				}else {
+					
+					if(reqDown.containsKey(currFloor)) {
 						stop = true;
-						floor = reqUp.get(currFloor);
-						synchronized (this) {
-							reqDown.remove(currFloor);
-							queue.removeIf(x -> ((x.getId() == currFloor) && (Constants.DIR.fromCode(x.getData().get(0)) == dir)));
+						floor = reqDown.get(currFloor);
+						reqDown.remove(currFloor);
+					}
+					
+					if(!stop) {
+						for(int i=0; i<queue.size(); i++ ) {
+							ArrayList<Integer> curr = queue.get(i);
+							if ((curr.get(0) == currFloor) && (curr.get(2) == 2)) {
+								synchronized(this) {
+									queue.remove(i);
+								}
+								stop = true;
+								floor = curr.get(1);
+								break;
+							}
 						}
 					}
 				}
+					
+					
+					/*
+					for(int i=0; i<queue.size(); i++ ) {
+						ArrayList<Integer> curr = queue.get(i);
+						if ((curr.get(0) == currFloor) && (curr.get(2) == 1)) {
+							synchronized(this) {
+								queue.remove(i);
+							}
+							stop = true;
+							floor = curr.get(1);
+						}
+					}
+					
+					if(!stop && reqUp.containsKey(currFloor)) {
+						stop = true;
+						floor = reqUp.remove(currFloor);
+					}
+					*/
+					
+				
 
 				ElevatorMessage newMsg;
-				if (stop) {
+				if (stop && floor != -1) {
 					newMsg = new ElevatorMessage(ElevatorMessage.MessageType.STOP, car, floor);
 				} else {
 					newMsg = new ElevatorMessage(ElevatorMessage.MessageType.CONT, car, dir.getCode());
@@ -124,17 +169,27 @@ public class Scheduler {
 				wait();
 			}
 			
+			
+			
 			// now we are processing one request, so one car is occupied
 			processing += 1;
 			
-			ElevatorMessage msg = queue.remove();
-			int fromFloor = msg.getId();
-			Constants.DIR dir = Constants.DIR.fromCode(msg.getData().get(0));
+			ArrayList<Integer> msg = queue.removeFirst();
+			int from = msg.get(0);
+			Constants.DIR dir = Constants.DIR.fromCode(msg.get(2));
+			int to = msg.get(1);
+
+			if (dir == Constants.DIR.UP) {
+				synchronized (this) {
+					reqUp.put(from, to);
+				}
+			} else {
+				synchronized (this) {
+					reqDown.put(from, to);
+				}
+			}
 			
-	
-			
-			ElevatorMessage newMsg = new ElevatorMessage(ElevatorMessage.MessageType.REQ, fromFloor, dir.getCode());
-			System.out.println("SCHEDULER: SENDING REQ TO ELEVATOR " + newMsg);
+			ElevatorMessage newMsg = new ElevatorMessage(ElevatorMessage.MessageType.REQ, from, dir.getCode());
 			elevatorNotifier.sendMessage(newMsg, Constants.ELEV_ADDR);
 		}
 

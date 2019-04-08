@@ -1,8 +1,12 @@
 package Floor;
 
+import java.util.ArrayList;
+
+import File.ReadFile;
 import core.Constants;
 import core.ElevatorMessage;
 import core.EventListener;
+import core.RequestData;
 
 public class FloorController {
 
@@ -44,7 +48,63 @@ public class FloorController {
 	}
 
 	public void readInput() {
-
+		ArrayList<RequestData> inputData = ReadFile.getData("inputFile.txt");
+		// everything below this is just demo runs
+		try {
+			Thread.sleep(5000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		if(inputData.get(0).goingUp()) {
+			floors[inputData.get(0).getFloorNumber()].reqUp(inputData.get(0).getfloorToGo());
+		}
+		else {
+			floors[inputData.get(0).getFloorNumber()].reqDown(inputData.get(0).getfloorToGo());
+		}
+		
+		
+		try {
+			Thread.sleep(3000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		if(inputData.get(1).goingUp()) {
+			floors[inputData.get(1).getFloorNumber()].reqUp(inputData.get(1).getfloorToGo());
+		}
+		else {
+			floors[inputData.get(1).getFloorNumber()].reqDown(inputData.get(1).getfloorToGo());
+		}
+		try {
+			Thread.sleep(3000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		if(inputData.get(2).goingUp()) {
+			floors[inputData.get(2).getFloorNumber()].reqUp(inputData.get(2).getfloorToGo());
+		}
+		else {
+			floors[inputData.get(2).getFloorNumber()].reqDown(inputData.get(2).getfloorToGo());
+		}
+		
+		try {
+			Thread.sleep(3000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		if(inputData.get(3).goingUp()) {
+			floors[inputData.get(3).getFloorNumber()].reqUp(inputData.get(3).getfloorToGo());
+		}
+		else {
+			floors[inputData.get(3).getFloorNumber()].reqDown(inputData.get(3).getfloorToGo());
+		}
 	}
 
 	public void start() {
@@ -66,6 +126,7 @@ public class FloorController {
 
 		FloorController c = new FloorController();
 		c.start();
+		c.readInput();
 	}
 
 }

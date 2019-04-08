@@ -55,7 +55,7 @@ public class Floor {
 		// num -> floor we want to go to
 		// send request from floor (this.floorNum) to floor num
 		
-		System.out.println("\nFLOOR "+ floorNum + " REQUESTED AN ELEVATOR GOING UP");
+		System.out.println("\nFLOOR "+ floorNum + " REQUESTED AN ELEVATOR GOING DOWN");
 		reqLampDown.setOn(true);
 		reqBtnDown.setPressed(true);
 		this.notifier.sendMessage(new ElevatorMessage(ElevatorMessage.MessageType.REQ, this.floorNum, Constants.DIR.DOWN.getCode(), num), Constants.SCHEDULER_ADDR);

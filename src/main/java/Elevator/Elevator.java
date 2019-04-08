@@ -46,27 +46,38 @@ public class Elevator {
 	}
 	
 	public void receiveRequest(int floor, DIR direction) {
-		if (direction == DIR.UP) 
-			up.add(floor);
-		else if (direction == DIR.DOWN) 
-			down.add(floor);
-		
+		if(floor == -1) return;
+		System.out.println("\nELEVATOR " + carNum+"  RECEIVED REQUEST GOING " + direction + " ON FLOOR " + floor);
 		if (floor > currFloor) {
 			this.dir = DIR.UP;
-			moveFloor();
 		}
 		else if (floor < currFloor) {
 			this.dir = DIR.DOWN;
-			moveFloor();
 		}
 		else {
 			this.dir = direction;
-			// TODO: ANNOUNCE FLOOR
-			// IF RESP CONTAINS NEW FLOOR, receiveReq
+			ElevatorMessage msg = new ElevatorMessage(ElevatorMessage.MessageType.ARRIVAL, carNum, dir.getCode(), currFloor);
+			int code = notif.sendMessage(msg, ADDRESS);
+			if(dir == DIR.UP) up.add(code);
+			else down.add(code);
+			moveFloor();
 		}
+		if (direction == DIR.UP && floor != currFloor) {
+			up.add(floor);
+			moveFloor();
+		}
+			
+		else if (direction == DIR.DOWN && floor != currFloor) {
+			down.add(floor);
+			moveFloor();
+		}
+			
+		
+		
 	}
 	
 	void moveFloor() {
+		System.out.println("\n");
 		if(dir == DIR.NONE) {
 			ElevatorMessage msg = new ElevatorMessage(ElevatorMessage.MessageType.EMPTY, carNum);
 			EventNotifier notif = new EventNotifier(Constants.SCHED_PORT,"ELEVATOR EMPTY NOTIFICATION");
@@ -74,7 +85,7 @@ public class Elevator {
 		}
 		else {
 			// doors close if not already closed
-			System.out.println("ELEVATOR LEAVING FLOOR " + currFloor);
+			System.out.println("ELEVATOR " + carNum+"  LEAVING FLOOR " + currFloor);
 			Elevator c = this;
 			new java.util.Timer().schedule(
 			        new java.util.TimerTask() {
@@ -89,16 +100,17 @@ public class Elevator {
 	}
 	
 	public void move() {
-		System.out.println("\n");
+		
 		if(dir == DIR.UP) {
 			if(currFloor == (Constants.NUM_FLOORS-1)) {
 				// shouldn't be here
-				System.out.println("ELEV ERROR: TRYING TO GO UP ON HIGHEST FLOOR");
+				System.out.println("ELEV" + carNum+" ERROR: TRYING TO GO UP ON HIGHEST FLOOR");
 				return;
 			}
 			
 			currFloor += 1;
-			System.out.println("ELEVATOR ON FLOOR "+ currFloor);
+			System.out.println("ELEVATOR " + carNum+ " ON FLOOR "+ currFloor);
+			if (up.isEmpty() && !down.isEmpty() && down.peek() <= currFloor) dir = DIR.DOWN;
 		}
 		else if(dir == DIR.DOWN) {
 			if (currFloor == 0) {
@@ -107,7 +119,9 @@ public class Elevator {
 				return;
 			}
 			currFloor -= 1;
-			System.out.println("ELEVATOR ON FLOOR "+ currFloor);
+			System.out.println("ELEVATOR" + carNum+" ON FLOOR "+ currFloor);
+			if (down.isEmpty() && !up.isEmpty() && up.peek() >= currFloor) dir = DIR.UP;
+
 		}
 		else {
 			// shouldnt be here
@@ -116,16 +130,18 @@ public class Elevator {
 		}
 		
 		
+		
 		boolean stop = false;
 		
 		ElevatorMessage msg = new ElevatorMessage(ElevatorMessage.MessageType.ARRIVAL, carNum, dir.getCode(), currFloor);
-		int code = notif.sendMessage(msg, ADDRESS);
 		
+		int code = notif.sendMessage(msg, ADDRESS);
+		if(msg.getId() != carNum) code = -1;
 		
 		if (code >= 0) {
 			if (dir == DIR.UP) {
 				if(!up.contains(code)) {
-					System.out.println("ELEVATOR: ADDED NEW REQUEST UP TO FLOOR " + code);
+					System.out.println("ELEVATOR " + carNum+ ": ADDED NEW REQUEST UP TO FLOOR " + code);
 					
 					up.add(code);
 				}
@@ -136,7 +152,7 @@ public class Elevator {
 			}
 			else if (dir == dir.DOWN){
 				if (!down.contains(code)) {
-					System.out.println("ELEVATOR: ADDED NEW REQUEST DOWN TO FLOOR " + code);
+					System.out.println("ELEVATOR "+ carNum+": ADDED NEW REQUEST DOWN TO FLOOR " + code);
 					
 					down.add(code);
 				}
@@ -151,15 +167,15 @@ public class Elevator {
 			
 		}
 		else if (code == -1) {
-			System.out.println("ELEVATOR: NO NEW REQUEST ON FLOOR " + currFloor);
+			System.out.println("ELEVATOR "+ carNum+": NO NEW REQUEST ON FLOOR " + currFloor);
 		}
 		else if (code == -3) {
 			System.out.println("ELEVATOR: UNKNOWN MESSAGE " + currFloor);
 
 		}
 		
-		System.out.println("UP: " + up);
-		System.out.println("DOWN: " + down);
+		System.out.println("ELEVATOR " + carNum+" UP: " + up);
+		System.out.println("ELEVATOR "+ carNum+ " DOWN: " + down);
 		
 		if(dir == DIR.UP) {
 			if(up.peek() == currFloor) {
@@ -197,7 +213,7 @@ public class Elevator {
 		}
 		
 		if (stop) {
-			System.out.println("ELEVATOR: DOORS OPENING ");
+			System.out.println("ELEVATOR " + carNum+": DOORS OPENING ");
 			door.open();
 			// ANNOUNCE OPEN DOORS
 			Elevator c = this;
@@ -206,7 +222,7 @@ public class Elevator {
 			            @Override
 			            public void run() {
 			            	c.door.close();
-			            	System.out.println("ELEVATOR: DOORS CLOSING");
+			            	System.out.println("ELEVATOR "+ carNum+": DOORS CLOSING");
 			            	c.moveFloor();
 			            }
 			        }, Constants.MS_FOR_DOOR
