@@ -197,7 +197,7 @@ public class Scheduler {
 
 	public void start() {
 		
-		Logger.clearAllLogFiles();
+		//Logger.clearAllLogFiles();
 		Scheduler s = this;
 
 		// producer
