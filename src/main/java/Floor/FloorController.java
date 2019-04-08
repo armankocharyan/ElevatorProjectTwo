@@ -3,6 +3,7 @@ package Floor;
 import java.util.ArrayList;
 
 import File.ReadFile;
+import Logger.Logger;
 import core.Constants;
 import core.ElevatorMessage;
 import core.EventListener;
@@ -77,6 +78,7 @@ public class FloorController {
 	}
 
 	public void start() {
+		Logger.clearAllLogFiles();
 		FloorController s = this;
 
 		// start the thread that listens for notifications from the scheduler

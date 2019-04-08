@@ -9,6 +9,7 @@ import java.util.Queue;
 
 import javax.swing.JTextArea;
 
+import Logger.Logger;
 import core.Constants;
 import core.ElevatorMessage;
 import core.EventListener;
@@ -17,7 +18,7 @@ import core.EventNotifier;
 public class Scheduler {
 
 	public static final String ADDRESS = "";
-
+	public static final String schedulerTestLogFileName = "TestLogs/scheduler.testing";
 	EventListener listener;
 	EventNotifier elevatorNotifier;
 	
@@ -32,6 +33,8 @@ public class Scheduler {
 	 
 	HashMap<Integer, Integer> processedUp = new HashMap<Integer, Integer>();
 	HashMap<Integer, Integer> processedDown = new HashMap<Integer, Integer>();
+	
+	String fileName = "Logs/Scheduler.log";
 	
 	int processing = 0;
 
@@ -55,7 +58,7 @@ public class Scheduler {
 		System.out.println("SCHEDULER: Starting listener...");
 		cal = Calendar.getInstance();
 		textBox.append("SCHEDULER: Starting listener..."  + time.format(cal.getTime()) + "\n");
-
+		Logger.write("SCHEDULER: Starting listener..."  + time.format(cal.getTime()) + "\n", fileName); 
 		for (;;) {
 			ElevatorMessage msg = listener.waitForNotification();
 			switch (msg.getType()) {
@@ -67,7 +70,7 @@ public class Scheduler {
 				System.out.println("\nEMPTY ELEVATOR" + msg);
 				cal = Calendar.getInstance();
 				textBox.append("\nCAR " + msg.getId() + " IS EMPTY " + time.format(cal.getTime()) + "\n");
-				
+				Logger.write("\nCAR " + msg.getId() + " IS EMPTY " + time.format(cal.getTime()) + "\n", fileName); 
 				synchronized (this) {
 					processing -= 1;
 
@@ -80,6 +83,7 @@ public class Scheduler {
 				System.out.println("\nNEW ELEVATOR REQUEST " + msg);
 				cal = Calendar.getInstance();
 				textBox.append("\nNEW ELEVATOR REQUEST FROM FLOOR " + msg.getId() + " GOING " + Constants.DIR.fromCode(msg.getData().get(0)) +" "+ time.format(cal.getTime()) + "\n");
+				Logger.write("\nNEW ELEVATOR REQUEST FROM FLOOR " + msg.getId() + " GOING " + Constants.DIR.fromCode(msg.getData().get(0)) +" "+ time.format(cal.getTime()) + "\n", fileName); 
 				int from = msg.getId();
 				int to = msg.getData().get(1);
 				int fault = msg.getData().get(2);
@@ -163,6 +167,7 @@ public class Scheduler {
 					cal = Calendar.getInstance();
 					System.out.println("\nCAR " + car+ " STOPPED ON FLOOR " + currFloor + " ON ITS WAY TO " + floor+" "+ time.format(cal.getTime()) + "\n");
 					textBox.append("\nCAR " + car+ " STOPPED ON FLOOR " + currFloor + " ON ITS WAY TO " + floor+" "+ time.format(cal.getTime()) + "\n");
+					Logger.write("\nCAR " + car+ " STOPPED ON FLOOR " + currFloor + " ON ITS WAY TO " + floor+" "+ time.format(cal.getTime()) + "\n", fileName);
 					newMsg = new ElevatorMessage(ElevatorMessage.MessageType.STOP, car, floor);
 				} else {
 					newMsg = new ElevatorMessage(ElevatorMessage.MessageType.CONT, car, dir.getCode());
@@ -170,6 +175,7 @@ public class Scheduler {
 				cal = Calendar.getInstance();
 				System.out.println("\nCAR " + car + " PASSING FLOOR " + currFloor + " GOING " + dir);
 				textBox.append("\nCAR " + car + " PASSING FLOOR " + currFloor + " GOING " + dir + " " + time.format(cal.getTime()) + "\n");
+				Logger.write("\nCAR " + car + " PASSING FLOOR " + currFloor + " GOING " + dir + " " + time.format(cal.getTime()) + "\n", fileName);
 				notif.sendMessage(newMsg, "");
 				break;
 			case FAULT:
@@ -177,6 +183,7 @@ public class Scheduler {
 				cal = Calendar.getInstance();
 
 				textBox.append("\nCAR " + msg.getId()+" HAS FAULTED ON FLOOR " + msg.getData().get(0) + " AND IS OUT OF COMMISSION"+" "+ time.format(cal.getTime()) + "\n");
+				Logger.write("\nCAR " + msg.getId()+" HAS FAULTED ON FLOOR " + msg.getData().get(0) + " AND IS OUT OF COMMISSION"+" "+ time.format(cal.getTime()) + "\n", fileName);
 				break;
 			default:
 				break;
@@ -216,6 +223,7 @@ public class Scheduler {
 				cal = Calendar.getInstance();
 				System.out.println("\nSCHEDULER: SENDING FAULT FROM FLOOR " + from);
 				textBox.append("\nSCHEDULER: SENDING FAULT FROM FLOOR " + from+" "+ time.format(cal.getTime()) + "\n");
+				Logger.write("\nSCHEDULER: SENDING FAULT FROM FLOOR " + from+" "+ time.format(cal.getTime()) + "\n", fileName);
 				ElevatorMessage newMsg = new ElevatorMessage(ElevatorMessage.MessageType.FAULT, from);
 				elevatorNotifier.sendMessage(newMsg, Constants.ELEV_ADDR);
 			}
@@ -223,7 +231,7 @@ public class Scheduler {
 				cal = Calendar.getInstance();
 				System.out.println("\nASKING FOR ELEVATOR FROM FLOOR " + from +" GOING " + dir + " TO FLOOR " + to+" "+ time.format(cal.getTime()) + "\n");
 				textBox.append("\nASKING FOR ELEVATOR FROM FLOOR " + from +" GOING " + dir + " TO FLOOR " + to+" "+ time.format(cal.getTime()) + "\n");
-
+				Logger.write("\nASKING FOR ELEVATOR FROM FLOOR " + from +" GOING " + dir + " TO FLOOR " + to+" "+ time.format(cal.getTime()) + "\n", fileName);
 				ElevatorMessage newMsg = new ElevatorMessage(ElevatorMessage.MessageType.REQ, from, dir.getCode());
 				elevatorNotifier.sendMessage(newMsg, Constants.ELEV_ADDR);
 			}

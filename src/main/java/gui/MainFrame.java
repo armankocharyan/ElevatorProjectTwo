@@ -299,17 +299,6 @@ public class MainFrame extends JFrame {
 		JLabel elev4CurrentFloorVal = new JLabel("0");
 		panelLeft.add(elev4CurrentFloorVal, "cell 1 23");
 		
-		JPanel panelRight = new JPanel();
-		getContentPane().add(panelRight, BorderLayout.EAST);
-		panelRight.setLayout(new MigLayout("", "[66px,grow]", "[16px][grow]"));
-		
-		JLabel inputFileLbl = new JLabel("Data Input");
-		panelRight.add(inputFileLbl, "cell 0 0,alignx left,aligny top");
-		
-		JTextArea inputDataTextArea = new JTextArea();
-		inputDataTextArea.setEditable(false);
-		panelRight.add(inputDataTextArea, "cell 0 1,grow");
-		
 		JPanel panelCenter = new JPanel();
 		getContentPane().add(panelCenter, BorderLayout.CENTER);
 		panelCenter.setLayout(null);

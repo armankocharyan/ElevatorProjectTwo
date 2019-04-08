@@ -1,5 +1,9 @@
 package Floor;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
+import Logger.Logger;
 import Scheduler.Scheduler;
 import core.Button;
 import core.Constants;
@@ -10,6 +14,7 @@ import core.Lamp;
 public class Floor {
 	
 	int floorNum;
+	public static final String floorTestLogFileName= "TestLogs/floor.testing";
 	
 	Button reqBtnUp = null; 
 	Button reqBtnDown = null;
@@ -25,6 +30,11 @@ public class Floor {
 	int reqUp = -1;
 	int reqDown = -1;
 	
+
+	Calendar cal;
+	SimpleDateFormat time;
+	String fileName = "Logs/floor.log";
+	
 	public Floor(int num) {
 		floorNum = num;
 		
@@ -38,16 +48,19 @@ public class Floor {
 		this.directionLampDown = new Lamp("Floor " + floorNum + " direction DOWN lamp", false);
 		
 		this.notifier = new EventNotifier(Constants.SCHED_PORT, "FLOOR NOTIFIER");
-
+		this.time = new SimpleDateFormat("HH:mm:ss.SSS");
 	}
 	
 	public void reqUp(int num, int fault) {
 		// num -> floor we want to go to
 		// send request from floor (this.floorNum) to floor num
 		System.out.println("\nFLOOR "+ floorNum + " REQUESTED AN ELEVATOR GOING UP");
+		cal = Calendar.getInstance();
+		Logger.write("\nFLOOR "+ floorNum + " REQUESTED AN ELEVATOR GOING UP " + time.format(cal.getTime()), fileName); 
 		reqLampUp.setOn(true);
 		reqBtnUp.setPressed(true);
 		this.notifier.sendMessage(new ElevatorMessage(ElevatorMessage.MessageType.REQ, this.floorNum, Constants.DIR.UP.getCode(), num, fault), Constants.SCHEDULER_ADDR);
+		this.time = new SimpleDateFormat("HH:mm:ss.SSS");
 	}
 	
 	public void reqDown(int num, int fault) {
@@ -56,6 +69,8 @@ public class Floor {
 		
 		
 		System.out.println("\nFLOOR "+ floorNum + " REQUESTED AN ELEVATOR GOING DOWN");
+		cal = Calendar.getInstance();
+		Logger.write("\nFLOOR "+ floorNum + " REQUESTED AN ELEVATOR GOING DOWN " + time.format(cal.getTime()), fileName); 
 		reqLampDown.setOn(true);
 		reqBtnDown.setPressed(true);
 		this.notifier.sendMessage(new ElevatorMessage(ElevatorMessage.MessageType.REQ, this.floorNum, Constants.DIR.DOWN.getCode(), num, fault), Constants.SCHEDULER_ADDR);
@@ -75,6 +90,8 @@ public class Floor {
 	
 	public void elevArrival(Constants.DIR direction, int carNum) {
 		System.out.println("\nFLOOR " + floorNum + " ELEVATOR CAR "+ carNum + " ARRIVAL.");
+		cal = Calendar.getInstance();
+		Logger.write("\nFLOOR " + floorNum + " ELEVATOR CAR "+ carNum + " ARRIVAL. " + time.format(cal.getTime()), fileName); 
 		if (direction == Constants.DIR.UP) {
 			resetUpBtn();
 			directionLampUp.setOn(true);
@@ -93,6 +110,8 @@ public class Floor {
 		if (floor == -1) return;
 		
 		System.out.println("\nPASSENGER ON FLOOR "+ floorNum + " ENTERED ELEVATOR CAR " + carNum + " TO FLOOR " + floor);
+		cal = Calendar.getInstance();
+		Logger.write("\nPASSENGER ON FLOOR "+ floorNum + " ENTERED ELEVATOR CAR " + carNum + " TO FLOOR " + floor + " " + time.format(cal.getTime()), fileName); 
 		if (dir == Constants.DIR.UP) {
 			reqUp = -1;
 		}else {
