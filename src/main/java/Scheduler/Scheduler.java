@@ -1,187 +1,200 @@
 package Scheduler;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import core.Constants;
 import core.ElevatorMessage;
 import core.EventListener;
 import core.EventNotifier;
 
-import Floor.FloorController;
-import Elevator.ElevatorController;
-import Logger.Logger;
-
-// TODO : Scheduler documentation
 public class Scheduler {
 
-	public static final int PORT = 24;
-	public static final String ADDRESS = ""; //Change this to the address of the floor and elevator PC. Leave it blank ("") to run locally
+	public static final String ADDRESS = "";
 
 	EventListener listener;
-	public static final String schedulerTestLogFileName = "TestLogs/scheduler.testing";
 	EventNotifier elevatorNotifier;
-	EventNotifier floorNotifier;
-	
-	long[] startTimesReq;
-	long[] startTimesTrip;
 
-	private Calendar cal; 
+	private Calendar cal;
 	private SimpleDateFormat time;
+	
+	LinkedList<ArrayList<Integer>> queue = new LinkedList<ArrayList<Integer>>();
+	HashMap<Integer, Integer> reqUp = new HashMap<Integer, Integer>();
+	HashMap<Integer, Integer> reqDown = new HashMap<Integer, Integer>();
+	 
+	HashMap<Integer, Integer> processedUp = new HashMap<Integer, Integer>();
+	HashMap<Integer, Integer> processedDown = new HashMap<Integer, Integer>();
+	
+	int processing = 0;
 
-	Queue<ElevatorMessage> queue = new LinkedList<ElevatorMessage>(); // our queue of requests
-	int processing = 0; // if this is > 0, we have an elevator moving to a floor to respond to a
-						// request. 1 = 1 car occupied, 2 = both cars occupied, etc.
-	int numCars = 0;
-	
-	boolean[] requestNotServed;
-	boolean[] passStuck;
-	
-	public Scheduler(int numCars, int numFloors) {
-		listener = new EventListener(PORT, "SCHEDULER LISTENER");
-		elevatorNotifier = new EventNotifier(ElevatorController.PORT, "SCHEDULER ELEVATOR NOTIFIER");
-		floorNotifier = new EventNotifier(FloorController.PORT, "SCHEDULER FLOOR NOTIFIER");
-		this.numCars = numCars;
+	public Scheduler() {
+		listener = new EventListener(Constants.SCHED_PORT, "SCHEDULER LISTENER");
+		elevatorNotifier = new EventNotifier(Constants.ELEV_PORT, "SCHEDULER ELEVATOR NOTIFIER");
 		time = new SimpleDateFormat("HH:mm:ss.SSS");
-		
-		requestNotServed = new boolean[numFloors];
-		passStuck = new boolean[numFloors];
-		for(int i=0; i<numFloors; i++) {
-			requestNotServed[i] = false;
-			passStuck[i] = false;
-		}
-
-		startTimesReq = new long[numFloors];
-		startTimesTrip = new long[numFloors];
 	}
 
 	public void startListen() throws InterruptedException {
-		// THIS ACTS AS A PRODUCER
 		cal = Calendar.getInstance();
 		System.out.println("SCHEDULER: Starting listener...");
-		Logger.write("SCHEDULER: Starting listener...", schedulerTestLogFileName);
-		Logger.write("SCHEDULER: Starting listener at " + time.format(cal.getTime()), "Logs/scheduler.log");
+
 		for (;;) {
 			ElevatorMessage msg = listener.waitForNotification();
 			switch (msg.getType()) {
-			case ELEV_REQUEST:
-				System.out.println("\nSCHEDULER: RECEIVED ELEVATOR REQUEST " + msg);
+			case EMPTY:
+				System.out.println("\nEMPTY ELEVATOR" + msg);
 				
-				synchronized (this) {
-					// when a person requests an elevator, add that request to our queue of requests
-					queue.add(msg);
-					// and let all waiting threads know there is a new request
-					notifyAll();
-				}
-				
-				break;
-			case PASSENGER_ENTER:
-				System.out.println("\nSCHEDULER: RECEIVED PASSENGER ENTER NOTIFICATION " + msg);
-				synchronized(this) {
-					passStuck[msg.getRequestedFloor()] = true;
-					startTimesTrip[msg.getRequestedFloor()] = System.nanoTime();
-
-				}
-				int nfloor = msg.getRequestedFloor();
-				new java.util.Timer().schedule(
-				        new java.util.TimerTask() {
-				            @Override
-				            public void run() {
-				                if (passStuck[nfloor]) {
-				                	throwRuntime("PASSENGER STUCK");
-				                }
-				            }
-				        },
-				        30000
-				);
-				
-				// the target address ("") is empty for now
-				this.elevatorNotifier.sendMessage(msg, ADDRESS);
-				
-				break;
-			case ELEV_PICKUP:
-				System.out.println("\nSCHEDULER: RECEIVED ELEVATOR PICKUP NOTIFICATION " + msg);
-				synchronized(this) {
-					long end = System.nanoTime();
-					double timeElapsed = (end - startTimesReq[msg.getFloor()])/1000000.00;
-					System.out.println("TIME TO PICK UP: " + timeElapsed + " ms");
-					Logger.write(""+ timeElapsed, "timer/timePickup.log");
-					requestNotServed[msg.getFloor()] = false;
-				}
-				// the target address ("") is empty for now
-				this.floorNotifier.sendMessage(msg, ADDRESS);
-				break;
-			case ELEV_ARRIVAL:
-				System.out.println("\nSCHEDULER: RECEIVED ELEVATOR ARRIVAL NOTIFICATION " + msg);
-				synchronized(this) {
-					passStuck[msg.getFloor()] = false;
-					long end = System.nanoTime();
-					double timeElapsed = (end - startTimesTrip[msg.getFloor()])/1000000.00;
-					Logger.write(""+timeElapsed, "timer/timeRide.log");
-				}
-				
-				// the target address ("") is empty for now
-				this.floorNotifier.sendMessage(msg, ADDRESS);
 				synchronized (this) {
 					processing -= 1;
 
 					// let the waiting threads know that we are free to process another thread
 					notifyAll();
 					
-					
 				}
 				break;
+			case REQ:
+				System.out.println("\nNEW ELEVATOR REQUEST" + msg);
+				int from = msg.getId();
+				int to = msg.getData().get(1);
+				Constants.DIR direction = Constants.DIR.fromCode(msg.getData().get(0));
+				
+				synchronized(this) {
+					ArrayList<Integer> gg = new ArrayList<Integer>();
+					gg.add(from);
+					gg.add(to);
+					gg.add(direction.getCode());
+					queue.add(gg);
+					notifyAll();
+				}
+
+				break;
+			case ARRIVAL:
+				int car = msg.getId();
+				Constants.DIR dir = Constants.DIR.fromCode(msg.getData().get(0));
+				int currFloor = msg.getData().get(1);
+
+				System.out.println("\nCAR " + car + " ON FLOOR " + currFloor + " IN DIR " + dir);
+				EventNotifier notif = new EventNotifier(msg.PORT, "RETURN MSG");
+				boolean stop = false;
+				int floor = -1;
+				
+				
+				
+				if (dir == Constants.DIR.UP) {
+					
+					if(reqUp.containsKey(currFloor)) {
+						stop = true;
+						floor = reqUp.get(currFloor);
+						reqUp.remove(currFloor);
+					}
+					
+					if(!stop) {
+						for(int i=0; i<queue.size(); i++ ) {
+							ArrayList<Integer> curr = queue.get(i);
+							if ((curr.get(0) == currFloor) && (curr.get(2) == 1)) {
+								synchronized(this) {
+									queue.remove(i);
+								}
+								stop = true;
+								floor = curr.get(1);
+								break;
+							}
+						}
+					}
+				}else {
+					
+					if(reqDown.containsKey(currFloor)) {
+						stop = true;
+						floor = reqDown.get(currFloor);
+						reqDown.remove(currFloor);
+					}
+					
+					if(!stop) {
+						for(int i=0; i<queue.size(); i++ ) {
+							ArrayList<Integer> curr = queue.get(i);
+							if ((curr.get(0) == currFloor) && (curr.get(2) == 2)) {
+								synchronized(this) {
+									queue.remove(i);
+								}
+								stop = true;
+								floor = curr.get(1);
+								break;
+							}
+						}
+					}
+				}
+					
+					
+					/*
+					for(int i=0; i<queue.size(); i++ ) {
+						ArrayList<Integer> curr = queue.get(i);
+						if ((curr.get(0) == currFloor) && (curr.get(2) == 1)) {
+							synchronized(this) {
+								queue.remove(i);
+							}
+							stop = true;
+							floor = curr.get(1);
+						}
+					}
+					
+					if(!stop && reqUp.containsKey(currFloor)) {
+						stop = true;
+						floor = reqUp.remove(currFloor);
+					}
+					*/
+					
+				
+
+				ElevatorMessage newMsg;
+				if (stop && floor != -1) {
+					newMsg = new ElevatorMessage(ElevatorMessage.MessageType.STOP, car, floor);
+				} else {
+					newMsg = new ElevatorMessage(ElevatorMessage.MessageType.CONT, car, dir.getCode());
+				}
+				notif.sendMessage(newMsg, "");
+				break;
+			default:
+				break;
 			}
-
 		}
-
 	}
 
 	public synchronized void dequeue() throws InterruptedException {
 		// THIS ACTS AS A CONSUMER
 		for (;;) {
-			while (queue.isEmpty() || processing >= numCars) {
-				// WAIT while our queue is empty OR while all cars are occupied (processing >=
-				// numCars)
+			while(queue.isEmpty() || processing >= Constants.NUM_CARS) {
 				wait();
 			}
-
+			
+			
+			
 			// now we are processing one request, so one car is occupied
 			processing += 1;
+			
+			ArrayList<Integer> msg = queue.removeFirst();
+			int from = msg.get(0);
+			Constants.DIR dir = Constants.DIR.fromCode(msg.get(2));
+			int to = msg.get(1);
 
-			// get the request and remove it from the queue
-			ElevatorMessage msg = queue.remove();
+			if (dir == Constants.DIR.UP) {
+				synchronized (this) {
+					reqUp.put(from, to);
+				}
+			} else {
+				synchronized (this) {
+					reqDown.put(from, to);
+				}
+			}
 			
-			int nFloor = msg.getId();
-			requestNotServed[nFloor] = true;
-			startTimesReq[nFloor] = System.nanoTime();
-			
-			// send notification to elevatorController that someone has requested a car
-			// the target address ("") is empty for now
-			this.elevatorNotifier.sendMessage(msg, ADDRESS);
-			
-			new java.util.Timer().schedule(
-			        new java.util.TimerTask() {
-			            @Override
-			            public void run() {
-			                if (requestNotServed[nFloor]) {
-			                	
-			                	throwRuntime("ELEVATOR TIMEOUT");
-			                	
-			                }
-			            }
-			        },
-			        30000
-			);
-			
+			ElevatorMessage newMsg = new ElevatorMessage(ElevatorMessage.MessageType.REQ, from, dir.getCode());
+			elevatorNotifier.sendMessage(newMsg, Constants.ELEV_ADDR);
 		}
+
 	}
 
-	void throwRuntime(String s) {
-		throw new RuntimeException(s);
-	}
-	
 	public void start() {
 		
 		Logger.clearAllLogFiles();
@@ -199,8 +212,6 @@ public class Scheduler {
 				}
 			}
 		});
-
-		// consumer
 		Thread t2 = new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -215,14 +226,24 @@ public class Scheduler {
 
 
 		t2.start();
+
 		t1.start();
 	}
 
-	public static void main(String[] args) {
-		
-		
-		Scheduler s = new Scheduler(2,8);
-		s.start();
+	public void sendReq() {
+		/*
+		 * System.out.println("Sending Message"); ElevatorMessage msg = new
+		 * ElevatorMessage(ElevatorMessage.MessageType.REQ, 4,
+		 * Constants.DIR.UP.getCode()); elevatorNotifier.sendMessage(msg, "");
+		 * reqUp.put(4, 6); System.out.println("msg: " + msg.toString()); reqUp.put(2,
+		 * 7);
+		 */
+
 	}
 
+	public static void main(String[] args) {
+		Scheduler s = new Scheduler();
+		s.start();
+
+	}
 }

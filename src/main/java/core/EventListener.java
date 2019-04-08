@@ -49,6 +49,7 @@ public class EventListener {
 		try {
 			// blocking wait call
 			recvSocket.receive(recvPacket);
+			
 			System.out.println(name + ": RECEIVED NOTIFICATION");
 		} catch (IOException e) {
 			System.out.print("IO Exception: likely:");
@@ -59,6 +60,8 @@ public class EventListener {
 		
 		// turn this message into an instance of ElevatorMessage & return it to the class
 		msg = new ElevatorMessage(recvPacket.getData());
+		msg.addr = recvPacket.getAddress();
+		msg.PORT = recvPacket.getPort();
 		return msg;
 	}
 }
