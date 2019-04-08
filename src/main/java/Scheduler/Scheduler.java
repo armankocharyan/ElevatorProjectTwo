@@ -17,7 +17,7 @@ import Logger.Logger;
 public class Scheduler {
 
 	public static final int PORT = 24;
-	public static final String ADDRESS = "172.17.70.139"; //Change this to the address of the floor and elevator PC. Leave it blank ("") to run locally
+	public static final String ADDRESS = ""; //Change this to the address of the floor and elevator PC. Leave it blank ("") to run locally
 
 	EventListener listener;
 	public static final String schedulerTestLogFileName = "TestLogs/scheduler.testing";
