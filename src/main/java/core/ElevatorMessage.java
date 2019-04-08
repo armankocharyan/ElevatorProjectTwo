@@ -1,5 +1,6 @@
 package core;
 
+import java.net.InetAddress;
 import java.util.ArrayList;
 
 /**
@@ -12,7 +13,8 @@ public class ElevatorMessage {
 	
 	
 	public enum MessageType {
-		ELEV_REQUEST('0'), PASSENGER_ENTER('1'), ELEV_PICKUP('2'), ELEV_ARRIVAL('3');
+		ELEV_REQUEST('0'), PASSENGER_ENTER('1'), ELEV_PICKUP('2'), ELEV_ARRIVAL('3'),
+		STOP('4'), REQ('5'), DOORS('6'), ARRIVAL('7'), CONT('8'), EMPTY('9');
 
 		byte code;
 
@@ -23,6 +25,7 @@ public class ElevatorMessage {
 		public byte getCode() {
 			return code;
 		}
+		
 
 		public static MessageType typeFromCode(byte code) {
 			MessageType ret = null;
@@ -39,6 +42,24 @@ public class ElevatorMessage {
 			case '3':
 				ret = ELEV_ARRIVAL;
 				break;
+			case '4':
+				ret = STOP;
+				break;
+			case '5':
+				ret = REQ;
+				break;
+			case '6':
+				ret = DOORS;
+				break;
+			case '7':
+				ret = ARRIVAL;
+				break;
+			case '8':
+				ret = CONT;
+				break;
+			case '9':
+				ret = EMPTY;
+				break;
 			}
 			return ret;
 		}
@@ -54,6 +75,9 @@ public class ElevatorMessage {
 	int id = 0;
 	ArrayList<Integer> data = new ArrayList<Integer>();
 	byte[] msg = new byte[SIZE];
+	
+	public InetAddress addr = null;
+	public int PORT;
 
 	/**
 	 * Creates an ElevatorMessage from parameters.
@@ -222,6 +246,10 @@ public class ElevatorMessage {
 	 */
 	public byte[] getBytes() {
 		return msg;
+	}
+	
+	public ArrayList<Integer> getData() {
+		return data;
 	}
 
 	

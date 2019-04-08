@@ -1,243 +1,310 @@
 package Elevator;
 
-import Logger.Logger;
-import core.Button;
-import core.EventNotifier;
+import core.Constants;
 import core.ElevatorMessage;
-import core.Lamp;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import Scheduler.Scheduler;
+import core.EventNotifier;
+import core.Constants.DIR;
+
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.SocketException;
+import java.net.UnknownHostException;
+import java.util.Collections;
+import java.util.PriorityQueue;
 
 
 /**
- * Represents a single elevator car connected to our ElevatorController. This class
- * tracks where our car is at any point in time and notifies our scheduler when it has
- * arrived at a floor.
+ * 
+ * Represents one elevator CAR
+ *
  */
 public class Elevator {
-	// -- STATIC VARIABLES -- //
-	public static final String elevatorTestLogFileName = "TestLogs/elevator.testing";
+	
+	// ----- STATIC VARIABLES ----- //
+	public static final String LOG_FILE_NAME = "TestLogs/elevator.testing";
 	public static final String ADDRESS = ""; //Change this to the address of the scheduler PC. Leave it blank ("") to run locally
-
-	// -- INSTANCE VARIABLES -- //
-	int numFloors;
-	int onFloor = 0;
-	int direction = 1;
-	int carNum = -1;
-	int timeBetweenFloors = 0;
-	int[] destinationFloors = null;
-	boolean occupied = false;
-	EventNotifier notif;
-	Calendar cal;
-	SimpleDateFormat time;
-
-	// TODO : populate and implement our doors/motors/buttons/lamps in our Elevators
-	Door door;
-	Motor motor;
-	Lamp[] floorLamps;
-	Button[] floorBtns;
-
-	// -- CONSTRUCTOR -- //
-	public Elevator(int carNum, int numFloors, int timeBetweenFloors) {
-		this.numFloors = numFloors;
-		this.timeBetweenFloors = timeBetweenFloors;
-		this.onFloor = 0;
-		this.direction = 1;
+	
+	// ----- MEMBER VARIABLES ----- //
+	
+	public DIR dir = DIR.NONE;
+	PriorityQueue<Integer> up = new PriorityQueue<Integer>(Constants.NUM_FLOORS);
+	PriorityQueue<Integer> down = new PriorityQueue<Integer>(Constants.NUM_FLOORS, Collections.reverseOrder());
+	Integer currFloor = 0;
+	int carNum = 0;
+	
+	public Door door = new Door(false);
+	
+	BlockingEventNotifier notif = new BlockingEventNotifier(Constants.SCHED_PORT, "ELEVATOR");
+	
+	public Elevator(int carNum) {
 		this.carNum = carNum;
-		this.destinationFloors = new int[numFloors];
-		this.notif = new EventNotifier(Scheduler.PORT, "ELEVATOR");
-		this.time = new SimpleDateFormat("HH:mm:ss.SSS");
-		door = new Door(false);
+		if(notif == null) {
+			notif = new BlockingEventNotifier(Constants.SCHED_PORT, "ELEVATOR");
+		}
 	}
-
-	// -- GETTERS -- //
-	public int getCurrentFloor() {
-		return onFloor;
-	}
-
-	/**
-     * Getter for the elevator car's direction.
-     *
-	 * @return 1 if direction is UP, 2 if direction is DOWN
-	 */
-	public int getDirection() {
-		return direction; // 1->UP, 2->DOWN
-	}
-
-	public boolean isOccupied() {
-		return occupied;
-	}
-
-
-
-
-	/**
-	 * This is called when a floor opens a request for an elevator
-	 * and this car is chosen to service the request. It will
-	 * move the elevator to the floor over a period of time and
-	 * send a notification to the scheduler when it has arrived.
-	 *
-	 * @param floor the floor that has called the elevator.
-	 * @param dir the direction requested.
-	 */
-	public void pickUpPerson(int floor, int dir) {
-		this.occupied = true;
+	
+	public void receiveRequest(int floor, DIR direction) {
+		if (direction == DIR.UP) 
+			up.add(floor);
+		else if (direction == DIR.DOWN) 
+			down.add(floor);
 		
-		if (dir == 2)
-			this.direction = 2;
-		else 
-			this.direction = 1;
-
-		cal = Calendar.getInstance();
-		System.out.println("Elevator" + Integer.toString(this.carNum) + " Going to PICK UP to floor " +
-		floor + " from floor " + Integer.toString(onFloor) + " at " + time.format(cal.getTime()));
-		Logger.write("Elevator" + Integer.toString(this.carNum) + " Going to PICK UP to floor " +
-		floor + " from floor " + Integer.toString(onFloor) + " at " + time.format(cal.getTime()), "Logs/elevator.log");
-		
-		Logger.write("Elevator" + Integer.toString(this.carNum) + " Going to PICK UP to floor " +
-				floor + " from floor " + Integer.toString(onFloor) + " at " + time.format(cal.getTime()), "TestLogs/elevator.testing");
-
-		int time = (Math.abs(onFloor - floor)) * timeBetweenFloors;
-
-
-		new java.util.Timer().schedule(
-	        new java.util.TimerTask() {
-	            @Override
-	            public void run() {
-	                arrivePickUp(floor, dir);
-	            }
-	        },
-	        time
-		);
+		if (floor > currFloor) {
+			this.dir = DIR.UP;
+			moveFloor();
+		}
+		else if (floor < currFloor) {
+			this.dir = DIR.DOWN;
+			moveFloor();
+		}
+		else {
+			this.dir = direction;
+			// TODO: ANNOUNCE FLOOR
+			// IF RESP CONTAINS NEW FLOOR, receiveReq
+		}
 	}
-
-	/**
-	 * This is called when a passenger has entered the elevator and chosen
-	 * a floor to ride to. This will move our elevator to the floor requested
-	 * over a period of time and notify the scheduler when it has arrived.
-	 *
-	 * @param destination the floor we need to ride to.
-	 */
-	public void rideToFloor(int destination) {
-
-		//setting the destination and printing when the elevator departs
-		if (onFloor > destination) 
-			this.direction = 2;
-		else 
-			this.direction = 1;
+	
+	void moveFloor() {
+		if(dir == DIR.NONE) {
+			ElevatorMessage msg = new ElevatorMessage(ElevatorMessage.MessageType.EMPTY, carNum);
+			EventNotifier notif = new EventNotifier(Constants.SCHED_PORT,"ELEVATOR EMPTY NOTIFICATION");
+			notif.sendMessage(msg, Constants.SCHEDULER_ADDR);
+		}
+		else {
+			// doors close if not already closed
+			System.out.println("ELEVATOR LEAVING FLOOR " + currFloor);
+			Elevator c = this;
+			new java.util.Timer().schedule(
+			        new java.util.TimerTask() {
+			            @Override
+			            public void run() {
+			            	c.move();
+			            }
+			        }, Constants.MS_PER_FLOOR
+				);
+		}
 		
-		cal = Calendar.getInstance();
-		System.out.println("Elevator" + Integer.toString(this.carNum) + " Going to requested floor " +
-		destination + " from floor" + Integer.toString(onFloor) + " at " + time.format(cal.getTime()));
-		Logger.write("Elevator" + Integer.toString(this.carNum) + " Going to requested floor " +
-				destination + " from floor" + Integer.toString(onFloor) + " at " + time.format(cal.getTime()), "Logs/elevator.log");
-		
-		Logger.write("Elevator" + Integer.toString(this.carNum) + " Going to requested floor " +
-				destination + " from floor" + Integer.toString(onFloor) + " at " + time.format(cal.getTime()), "TestLogs/elevator.testing");
-
-		int time = Math.abs(onFloor - destination) * timeBetweenFloors;
-		new java.util.Timer().schedule(
-		        new java.util.TimerTask() {
-		            @Override
-		            public void run() {
-		                arriveRequest(destination);
-		            }
-		        },
-		        time
-		);
-
 	}
-
-
-	public void arriveRequest(int destination) {
-
-		cal = Calendar.getInstance();
-		System.out.println("Elevator" + Integer.toString(this.carNum) + " Has arrived to floor" + destination + " at " + time.format(cal.getTime()));
-		Logger.write("Elevator" + Integer.toString(this.carNum) + " Has arrived to floor" + destination + " at " + time.format(cal.getTime()), "Logs/elevator.log");
-		Logger.write("Elevator" + Integer.toString(this.carNum) + " Has arrived to floor" + destination + " at " + time.format(cal.getTime()), "TestLogs/elevator.testing");
-		// set our new current floor to the floor we want to arrive at and our direction
-		this.onFloor = destination;
-		// send notification to scheduler saying that we have arrived and that we have no pending destination
-		// the target address ("") is empty for now
-		this.notif.sendMessage(new ElevatorMessage(ElevatorMessage.MessageType.ELEV_ARRIVAL, this.carNum, this.direction, this.onFloor), ADDRESS);
-		occupied = false;
-		// this does nothing yet, eventually when we have the GUI it should show the doors opening
-		openDoors(2000);
-
-	}
-
-
-	public void arrivePickUp(int floor, int dir) {
-
-		cal = Calendar.getInstance();
-		System.out.println("Elevator" + Integer.toString(this.carNum) + " Has arrived to floor " + floor + " at " + time.format(cal.getTime()));
-		Logger.write("Elevator" + Integer.toString(this.carNum) + " Has arrived to floor " + floor + " at " + time.format(cal.getTime()), "Logs/elevator.log");
-		Logger.write("Elevator" + Integer.toString(this.carNum) + " Has arrived to floor " + floor + " at " + time.format(cal.getTime()), "TestLogs/elevator.testing");
-		// set our new current floor and direction
-		this.onFloor = floor;
-		this.direction = dir;
-		// send notification to scheduler saying that we have arrived and which floor we are going to next
-		// the target address ("") is empty for now
-		this.notif.sendMessage(new ElevatorMessage(ElevatorMessage.MessageType.ELEV_PICKUP, this.carNum, this.direction, this.onFloor), ADDRESS);
-
-
-		// this does nothing yet, eventually when we have the GUI it should show the doors opening
-		openDoors(2000);
-
-	}
-
-
-
-	void openDoors(int deltaTime) {
-		
-		cal = Calendar.getInstance();
-		System.out.println("opening doors at: " + time.format(cal.getTime()));
-		//Waiting for door to open**********************************************
-		new java.util.Timer().schedule(
-		        new java.util.TimerTask() {
-		            @Override
-		            public void run() {
-		            	cal = Calendar.getInstance();
-		            	System.out.println("waitinging to enter: " + time.format(cal.getTime()));
-		            	door.open();
-		            	//Waiting for someone to enter**********************************************
-		            	new java.util.Timer().schedule(
-		        		        new java.util.TimerTask() {
-		        		            @Override
-		        		            public void run() {
-		        		            	door.open();
-		        		            	
-		        		            	//Waiting for door to close**********************************************
-		        		            	new java.util.Timer().schedule(
-		        		        		        new java.util.TimerTask() {
-		        		        		            @Override
-		        		        		            public void run() {
-		        		        		            	System.out.println("waitinging to enter");
-		        		        		            	cal = Calendar.getInstance();
-		        		        		            	door.close();
-		        		        		            	
-		        		        		            	
-		        		        		            }
-		        		        		        },2000
-		        		        			);
-		        		            	
-		        		            	
-		        		            }
-		        		        },deltaTime
-		        			);
-		            	
-		            	
-		            }
-		        },2000
-			);
+	
+	public void move() {
+		System.out.println("\n");
+		if(dir == DIR.UP) {
+			if(currFloor == (Constants.NUM_FLOORS-1)) {
+				// shouldn't be here
+				System.out.println("ELEV ERROR: TRYING TO GO UP ON HIGHEST FLOOR");
+				return;
+			}
+			
+			currFloor += 1;
+			System.out.println("ELEVATOR ON FLOOR "+ currFloor);
+		}
+		else if(dir == DIR.DOWN) {
+			if (currFloor == 0) {
+				// shouldn't be here
+				System.out.println("ELEV ERROR: TRYING TO GO DOWN ON LOWEST FLOOR");
+				return;
+			}
+			currFloor -= 1;
+			System.out.println("ELEVATOR ON FLOOR "+ currFloor);
+		}
+		else {
+			// shouldnt be here
+			System.out.println("ELEV ERROR: TRYING TO MOVE IN DIR NONE");
+					
+		}
 		
 		
+		boolean stop = false;
 		
-		// open the doors
+		ElevatorMessage msg = new ElevatorMessage(ElevatorMessage.MessageType.ARRIVAL, carNum, dir.getCode(), currFloor);
+		int code = notif.sendMessage(msg, ADDRESS);
+		
+		
+		if (code >= 0) {
+			if (dir == DIR.UP) {
+				if(!up.contains(code)) {
+					System.out.println("ELEVATOR: ADDED NEW REQUEST UP TO FLOOR " + code);
+					
+					up.add(code);
+				}
+				if(!up.contains(currFloor)) {
+					up.add(currFloor);
+				}
+				
+			}
+			else if (dir == dir.DOWN){
+				if (!down.contains(code)) {
+					System.out.println("ELEVATOR: ADDED NEW REQUEST DOWN TO FLOOR " + code);
+					
+					down.add(code);
+				}
+				if(!down.contains(currFloor)) {
+					down.add(currFloor);
+				}
+				
+			}
+		}
+		else if (code == -2) {
+			System.out.println("ELEVATOR: BLOCKING NOPTIFIER DIDNT WORK");
+			
+		}
+		else if (code == -1) {
+			System.out.println("ELEVATOR: NO NEW REQUEST ON FLOOR " + currFloor);
+		}
+		else if (code == -3) {
+			System.out.println("ELEVATOR: UNKNOWN MESSAGE " + currFloor);
+
+		}
+		
+		System.out.println("UP: " + up);
+		System.out.println("DOWN: " + down);
+		
+		if(dir == DIR.UP) {
+			if(up.peek() == currFloor) {
+				stop = true;
+				up.remove();
+			}
+			
+			if(up.isEmpty()) {
+				if(!down.isEmpty()) {
+					if (down.peek() <= currFloor) {
+						dir = DIR.DOWN;
+					}
+				}
+				else {
+					dir = DIR.NONE;
+				}
+			}
+		}
+		else if (dir == DIR.DOWN) {
+			if(down.peek() == currFloor) {
+				stop = true;
+				down.remove();
+			}
+			if(down.isEmpty()) {
+				if (!up.isEmpty()) {
+					if(up.peek() >= currFloor) {
+						dir = DIR.UP;
+					}
+				}
+				else {
+					dir = DIR.NONE;
+					
+				}
+			}
+		}
+		
+		if (stop) {
+			System.out.println("ELEVATOR: DOORS OPENING ");
+			door.open();
+			// ANNOUNCE OPEN DOORS
+			Elevator c = this;
+			new java.util.Timer().schedule(
+			        new java.util.TimerTask() {
+			            @Override
+			            public void run() {
+			            	c.door.close();
+			            	System.out.println("ELEVATOR: DOORS CLOSING");
+			            	c.moveFloor();
+			            }
+			        }, Constants.MS_FOR_DOOR
+				);
+			
+		}
+		
+		else{
+			moveFloor();
+		}
+		
 	}
+	
+}
 
+class BlockingEventNotifier{
+	// -- INSTANCE VARIABLES -- //
+		protected InetAddress localhost;
+		int PORT;
+		String name = "";
+		
+		// -- CONSTRUCTOR -- //
+		public BlockingEventNotifier(int PORT, String name) {
+			this.PORT = PORT;
+			this.name = name;
+			try {
+				this.localhost = InetAddress.getLocalHost();
+			} catch (UnknownHostException e) {
+				e.printStackTrace();
+				System.exit(1);
+			}
+		}
+			
+		/**
+		 * Opens a new and temporary socket on any available port to
+		 * send a datagram to the port stored in this class. This does
+		 * not block or wait for a response, simply sends a notification.
+		 * 
+		 * @param msg the ElevatorMessage instance we want to send
+		 */
+		public int sendMessage(ElevatorMessage msg, String address) {
+			ElevatorMessage ret = null;
+			try {
+				// Constructs and opens a new packet/socket 
+				
+				DatagramSocket sendSocket = new DatagramSocket();
+				
+				
+				//inter-computer communication
+				DatagramPacket sendPacket = new DatagramPacket(msg.getBytes(), ElevatorMessage.SIZE, localhost, this.PORT);
+				
+				if(!address.equals("")) {
+					
+					InetAddress targetAddress = null;
+					try {
+						targetAddress = InetAddress.getByName(address);
+					} catch (UnknownHostException e) {
+						e.printStackTrace();
+					}
+					sendPacket = new DatagramPacket(msg.getBytes(), ElevatorMessage.SIZE, targetAddress, this.PORT);
+				}
+					
+				
+				System.out.print(name);
+				System.out.println(": SENDING EVENT INFORMATION" + msg);
+				try {
+					// send the packet
+					sendSocket.send(sendPacket);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				
+				
+				byte[] data = new byte[ElevatorMessage.SIZE];
+				
+				DatagramPacket recv = new DatagramPacket(data, data.length);
+				sendSocket.receive(recv);
+				System.out.println(name + ": RECEIVED NOTIFICATION");
+				ret = new ElevatorMessage(recv.getData());
+				
+				// close the socket and return
+				sendSocket.close();
+				
+			} catch (SocketException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
-
-
+			if(ret == null) {
+				return -2;
+			}
+			else {
+				if (ret.getType() == ElevatorMessage.MessageType.STOP) return ret.getData().get(0);
+				else if (ret.getType() == ElevatorMessage.MessageType.CONT) return -1;
+				else return -3;
+			}
+		}
 }
