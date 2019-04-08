@@ -41,24 +41,24 @@ public class Floor {
 
 	}
 	
-	public void reqUp(int num) {
+	public void reqUp(int num, int fault) {
 		// num -> floor we want to go to
 		// send request from floor (this.floorNum) to floor num
-		
 		System.out.println("\nFLOOR "+ floorNum + " REQUESTED AN ELEVATOR GOING UP");
 		reqLampUp.setOn(true);
 		reqBtnUp.setPressed(true);
-		this.notifier.sendMessage(new ElevatorMessage(ElevatorMessage.MessageType.REQ, this.floorNum, Constants.DIR.UP.getCode(), num), Constants.SCHEDULER_ADDR);
+		this.notifier.sendMessage(new ElevatorMessage(ElevatorMessage.MessageType.REQ, this.floorNum, Constants.DIR.UP.getCode(), num, fault), Constants.SCHEDULER_ADDR);
 	}
 	
-	public void reqDown(int num) {
+	public void reqDown(int num, int fault) {
 		// num -> floor we want to go to
 		// send request from floor (this.floorNum) to floor num
+		
 		
 		System.out.println("\nFLOOR "+ floorNum + " REQUESTED AN ELEVATOR GOING DOWN");
 		reqLampDown.setOn(true);
 		reqBtnDown.setPressed(true);
-		this.notifier.sendMessage(new ElevatorMessage(ElevatorMessage.MessageType.REQ, this.floorNum, Constants.DIR.DOWN.getCode(), num), Constants.SCHEDULER_ADDR);
+		this.notifier.sendMessage(new ElevatorMessage(ElevatorMessage.MessageType.REQ, this.floorNum, Constants.DIR.DOWN.getCode(), num, fault), Constants.SCHEDULER_ADDR);
 	}
 	
 	public void resetDownBtn() {

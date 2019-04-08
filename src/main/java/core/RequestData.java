@@ -3,22 +3,22 @@ package core;
 public class RequestData {
 	
 	//global variables
-	private String time;
+	private int fault;
 	private int floorNumber;
 	private int floorToGo;
 	private boolean requestUp;
 	
 	//constructor 
-	public RequestData(String time, int floorNumber, int floorToGo, boolean requestUp) {
-		this.time = time;
+	public RequestData(int fault, int floorNumber, int floorToGo, boolean requestUp) {
+		this.fault = fault;
 		this.floorNumber = floorNumber;
 		this.floorToGo = floorToGo;
 		this.requestUp = requestUp;
 	}
 	
 	//getters
-	public String getRequestTime() {
-		return this.time;
+	public int getFault() {
+		return this.fault;
 	}
 	
 	public int getFloorNumber() {
@@ -35,7 +35,7 @@ public class RequestData {
 	
 	public String toString() {
 		
-		return "Time: [" + time + "] Floor Number: [" + floorNumber + "] Floor to Go: [" + floorToGo + "] Going UP: [" + Boolean.toString(requestUp) + "]";
+		return "Fault: [" + fault + "] Floor Number: [" + floorNumber + "] Floor to Go: [" + floorToGo + "] Going UP: [" + Boolean.toString(requestUp) + "]";
 		
 	}
 }

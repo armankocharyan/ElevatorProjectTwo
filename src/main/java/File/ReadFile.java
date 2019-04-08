@@ -43,7 +43,7 @@ public class ReadFile {
 			
 			for(int i = 0; i < parsedData.size(); i++) {
 				ArrayList<String> line = ReadFile.parseInputLine(parsedData.get(i));
-				String tempTime = line.get(0);  //delta time
+				int tempFault = Integer.parseInt(line.get(0));  //delta time
 				
 				if(line.size() != 4) {
 					System.out.println("INVALID LINE");
@@ -67,7 +67,7 @@ public class ReadFile {
 				
 				int tempFloorToGo = Integer.parseInt(line.get(3));
 				
-				inputData.add(new RequestData(tempTime, tempFloorNumber, tempFloorToGo, tempGoingUp));
+				inputData.add(new RequestData(tempFault, tempFloorNumber, tempFloorToGo, tempGoingUp));
 			}
 			
 			

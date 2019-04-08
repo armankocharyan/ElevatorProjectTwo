@@ -4,17 +4,16 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 
 /**
- * ElevatorMessage is the default message class for all UDP messages to and from our
- * three subsystems (Floors, Elevators, and the Scheduler). Supports up to 96
- * int parameters as extra information and conversion between byte strings and 
- * class instances.
+ * ElevatorMessage is the default message class for all UDP messages to and from
+ * our three subsystems (Floors, Elevators, and the Scheduler). Supports up to
+ * 96 int parameters as extra information and conversion between byte strings
+ * and class instances.
  */
 public class ElevatorMessage {
-	
-	
+
 	public enum MessageType {
 		ELEV_REQUEST('0'), PASSENGER_ENTER('1'), ELEV_PICKUP('2'), ELEV_ARRIVAL('3'),
-		STOP('4'), REQ('5'), DOORS('6'), ARRIVAL('7'), CONT('8'), EMPTY('9');
+		STOP('4'), REQ('5'), DOORS('6'), ARRIVAL('7'), CONT('8'), EMPTY('9'), FAULT('A');
 
 		byte code;
 
@@ -60,6 +59,8 @@ public class ElevatorMessage {
 			case '9':
 				ret = EMPTY;
 				break;
+			case 'A':
+				ret = FAULT;
 			}
 			return ret;
 		}

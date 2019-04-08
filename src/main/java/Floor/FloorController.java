@@ -39,72 +39,41 @@ public class FloorController {
 		}
 	}
 
-	public void requestFloor(int from, int to) {
+	public void requestFloor(int from, int to, int fault) {
 
 		if (to > from)
-			floors[from].reqUp(to);
+			floors[from].reqUp(to, fault);
 		else
-			floors[from].reqDown(to);
+			floors[from].reqDown(to, fault);
 	}
 
 	public void readInput() {
 		ArrayList<RequestData> inputData = ReadFile.getData("inputFile.txt");
 		// everything below this is just demo runs
+		
+		
 		try {
-			Thread.sleep(5000);
+			Thread.sleep(3000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
-		if(inputData.get(0).goingUp()) {
-			floors[inputData.get(0).getFloorNumber()].reqUp(inputData.get(0).getfloorToGo());
-		}
-		else {
-			floors[inputData.get(0).getFloorNumber()].reqDown(inputData.get(0).getfloorToGo());
-		}
-		
-		
-		try {
-			Thread.sleep(500);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		if(inputData.get(1).goingUp()) {
-			floors[inputData.get(1).getFloorNumber()].reqUp(inputData.get(1).getfloorToGo());
-		}
-		else {
-			floors[inputData.get(1).getFloorNumber()].reqDown(inputData.get(1).getfloorToGo());
-		}
-		try {
-			Thread.sleep(500);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		for(RequestData line : inputData) {
+			if (line.goingUp()) {
+				floors[line.getFloorNumber()].reqUp(line.getfloorToGo(), line.getFault());
+			}
+			else {
+				floors[line.getFloorNumber()].reqDown(line.getfloorToGo(), line.getFault());
+			}
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		
-		if(inputData.get(2).goingUp()) {
-			floors[inputData.get(2).getFloorNumber()].reqUp(inputData.get(2).getfloorToGo());
-		}
-		else {
-			floors[inputData.get(2).getFloorNumber()].reqDown(inputData.get(2).getfloorToGo());
-		}
-		
-		try {
-			Thread.sleep(500);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		if(inputData.get(3).goingUp()) {
-			floors[inputData.get(3).getFloorNumber()].reqUp(inputData.get(3).getfloorToGo());
-		}
-		else {
-			floors[inputData.get(3).getFloorNumber()].reqDown(inputData.get(3).getfloorToGo());
-		}
 	}
 
 	public void start() {

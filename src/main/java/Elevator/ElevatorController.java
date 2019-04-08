@@ -72,6 +72,15 @@ public class ElevatorController {
 						}
 					}
 					break;
+				case FAULT:
+					System.out.println("\nELEVATOR CONTROLLER: RECEIVED ELEVATOR FAULT" + msg);
+					for(int i=0; i<Constants.NUM_CARS; i++) {
+						if (elevators[i].dir == DIR.NONE) {
+							elevators[i].receiveFault(msg.getId());
+							break;
+						}
+					}
+					break;
 				default:
 					break;
 				}

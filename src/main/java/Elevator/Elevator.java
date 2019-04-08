@@ -68,7 +68,9 @@ public class Elevator {
 		//setting the gui
 		
 		this.active = active;
+		this.active.setSelected(true);;
 		this.motorOn = motorOn;
+		this.motorOn.setSelected(true);
 		this.UPLamp = UPLamp;
 		this.DOWNLamp = DOWNLamp;
 		this.openDoor = openDoor;
@@ -80,6 +82,19 @@ public class Elevator {
 		if(notif == null) {
 			notif = new BlockingEventNotifier(Constants.SCHED_PORT, "ELEVATOR");
 		}
+	}
+	
+	public void receiveFault(int floor) {
+		up.clear();
+		down.clear();
+		this.dir = DIR.DEAD;
+		this.motorOn.setSelected(false);
+		this.active.setSelected(false);
+		System.out.println("\nELEVATOR " + carNum+" HAS FAULTED ON FLOOR " + floor + " AND IS OUT OF COMMISSION");
+		ElevatorMessage msg = new ElevatorMessage(ElevatorMessage.MessageType.FAULT, carNum, floor);
+		EventNotifier notif = new EventNotifier(Constants.SCHED_PORT,"ELEVATOR FAULT NOTIFICATION");
+		notif.sendMessage(msg, Constants.SCHEDULER_ADDR);
+		
 	}
 	
 	public void receiveRequest(int floor, DIR direction) {
@@ -276,6 +291,9 @@ public class Elevator {
 		if (stop) {
 			System.out.println("ELEVATOR " + carNum+": DOORS OPENING ");
 			door.open();
+			ElevatorMessage newMsg = new ElevatorMessage(ElevatorMessage.MessageType.DOORS, carNum, currFloor);
+			EventNotifier notif = new EventNotifier(Constants.SCHED_PORT,"ELEVATOR DOORS OPEN NOTIFICATION");
+			notif.sendMessage(newMsg, Constants.SCHEDULER_ADDR);
 			// ANNOUNCE OPEN DOORS
 			Elevator c = this;
 			new java.util.Timer().schedule(

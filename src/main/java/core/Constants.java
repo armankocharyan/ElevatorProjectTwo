@@ -16,7 +16,8 @@ public class Constants {
 	public enum DIR { 
 		NONE(0),
 		UP(1), 
-		DOWN(2);
+		DOWN(2),
+		DEAD(3);
 		
 		int code;
 		
@@ -33,6 +34,7 @@ public class Constants {
 			switch(num) {
 				case 1: ret = UP; break;
 				case 2: ret = DOWN; break;
+				case 3: ret = DEAD; break;
 				default: ret = NONE; break;
 			}
 			return ret;
