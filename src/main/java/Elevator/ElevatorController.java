@@ -2,6 +2,10 @@ package Elevator;
 
 import java.util.ArrayList;
 
+import javax.swing.JLabel;
+import javax.swing.JRadioButton;
+import javax.swing.JTextArea;
+
 import core.Constants;
 import core.Constants.DIR;
 import core.ElevatorMessage;
@@ -13,10 +17,40 @@ public class ElevatorController {
 	EventListener m_messageListener = null;
 	
 	
+	//gui variables 
+	JRadioButton openDoors [];
+	JRadioButton closedDoors [];
+	JRadioButton activeLamps [];
+	JRadioButton motors [];
+	JRadioButton UPLamps [];
+	JRadioButton DOWNLamps [];
+	JLabel currentFloorLabels [];
+	
 	public ElevatorController() {
 		elevators = new Elevator[Constants.NUM_CARS];
 	    for(int i=0; i<Constants.NUM_CARS; i++) {
 	    	elevators[i] =  new Elevator(i);
+	    }
+
+	    m_messageListener = new EventListener(Constants.ELEV_PORT, "ELEVATOR CONTROLLER");
+	}
+	
+	
+	public ElevatorController(JRadioButton openDoors [], JRadioButton closedDoors [], JRadioButton activeLamps [], JRadioButton motors [], JRadioButton UPLamps [],
+			JRadioButton DOWNLamps [], JLabel currentFloorLabels []) {
+		
+		
+		this.openDoors = openDoors;
+		this.closedDoors = closedDoors;
+		this.activeLamps = activeLamps;
+		this.motors = motors;
+		this.UPLamps = UPLamps;
+		this.DOWNLamps = DOWNLamps;
+		this.currentFloorLabels = currentFloorLabels;
+		
+		elevators = new Elevator[Constants.NUM_CARS];
+	    for(int i=0; i<Constants.NUM_CARS; i++) {
+	    	elevators[i] =  new Elevator(i, this.activeLamps[i], this.motors[i], this.UPLamps[i], this.DOWNLamps[i], this.openDoors[i], this.closedDoors[i], this.currentFloorLabels[i]);
 	    }
 
 	    m_messageListener = new EventListener(Constants.ELEV_PORT, "ELEVATOR CONTROLLER");

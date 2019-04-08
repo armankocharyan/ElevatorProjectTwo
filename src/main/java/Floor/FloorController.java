@@ -66,7 +66,7 @@ public class FloorController {
 		
 		
 		try {
-			Thread.sleep(3000);
+			Thread.sleep(500);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -79,7 +79,7 @@ public class FloorController {
 			floors[inputData.get(1).getFloorNumber()].reqDown(inputData.get(1).getfloorToGo());
 		}
 		try {
-			Thread.sleep(3000);
+			Thread.sleep(500);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -93,7 +93,7 @@ public class FloorController {
 		}
 		
 		try {
-			Thread.sleep(3000);
+			Thread.sleep(500);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

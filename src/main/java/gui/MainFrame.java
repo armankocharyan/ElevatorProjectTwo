@@ -34,6 +34,7 @@ import javax.swing.JList;
 import javax.swing.AbstractListModel;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import javax.swing.JEditorPane;
 
 public class MainFrame extends JFrame {
 
@@ -118,7 +119,7 @@ public class MainFrame extends JFrame {
 		getContentPane().add(panelLeft, BorderLayout.WEST);
 		panelLeft.setLayout(new MigLayout("", "[66px][][][][][][][]", "[16px][][][][][][][][][][][][][][][][][][][][][][][][]"));
 		
-		JLabel elev1Lbl = new JLabel("Elevator1");
+		JLabel elev1Lbl = new JLabel("Elevator0");
 		panelLeft.add(elev1Lbl, "cell 0 1,alignx left,aligny top");
 		
 		JLabel lampElev1Lbl = new JLabel("Lamps");
@@ -163,7 +164,7 @@ public class MainFrame extends JFrame {
 		JLabel elev1CurrentFloorVal = new JLabel("0");
 		panelLeft.add(elev1CurrentFloorVal, "cell 1 5");
 		
-		JLabel elev2Lbl = new JLabel("Elevator2");
+		JLabel elev2Lbl = new JLabel("Elevator1");
 		panelLeft.add(elev2Lbl, "cell 0 7");
 		
 		JLabel lampElev2Lbl = new JLabel("Lamps");
@@ -208,7 +209,7 @@ public class MainFrame extends JFrame {
 		JLabel elev2CurrentFloorVal = new JLabel("0");
 		panelLeft.add(elev2CurrentFloorVal, "cell 1 11");
 		
-		JLabel elev3Lbl = new JLabel("Elevator3");
+		JLabel elev3Lbl = new JLabel("Elevator2");
 		panelLeft.add(elev3Lbl, "cell 0 13");
 		
 		JLabel lampElev3Lbl = new JLabel("Lamps");
@@ -253,7 +254,7 @@ public class MainFrame extends JFrame {
 		JLabel elev3CurrentFloorVal = new JLabel("0");
 		panelLeft.add(elev3CurrentFloorVal, "cell 1 17");
 		
-		JLabel elev4Lbl = new JLabel("Elevator4");
+		JLabel elev4Lbl = new JLabel("Elevator3");
 		panelLeft.add(elev4Lbl, "cell 0 19");
 		
 		JLabel lampElev4Lbl = new JLabel("Lamps");
@@ -313,8 +314,8 @@ public class MainFrame extends JFrame {
 		getContentPane().add(panelCenter, BorderLayout.CENTER);
 		panelCenter.setLayout(null);
 		
-		JLabel logLbl = new JLabel("Log");
-		logLbl.setBounds(191, 27, 31, 16);
+		JLabel logLbl = new JLabel("Scheduler");
+		logLbl.setBounds(191, 27, 85, 16);
 		panelCenter.add(logLbl);
 		
 		JTextArea logTextBox = new JTextArea();
@@ -323,11 +324,22 @@ public class MainFrame extends JFrame {
 		panelCenter.add(logTextBox);
 		this.setVisible(true);
 		
+		JScrollPane sp = new JScrollPane(logTextBox, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		getContentPane().add(sp);
+		
+		//passing in variables to our systems
+		JRadioButton openDoors [] = {elev1DoorsOpen, elev2DoorsOpen, elev3DoorsOpen, elev4DoorsOpen};
+		JRadioButton closedDoors [] = {elev1DoorsClosed, elev2DoorsClosed, elev3DoorsClosed, elev4DoorsClosed};
+		JRadioButton activeLamps [] = {elev1Active, elev2Active, elev3Active, elev4Active};
+		JRadioButton motors [] = {motorElev1On, motorElev2On, motorElev3On, motorElev4On};
+		JRadioButton UPLamps [] = {lampElev1UP, lampElev2UP, lampElev3UP, lampElev4UP};
+		JRadioButton DOWNLamps [] = {lampElev1DOWN, lampElev2DOWN, lampElev3DOWN, lampElev4DOWN};
+		JLabel currentFloorLabels [] = {elev1CurrentFloorVal, elev2CurrentFloorVal, elev3CurrentFloorVal, elev4CurrentFloorVal};
 		
 		//Systems
-		ElevatorController e = new ElevatorController(2, 8, 3000);
-		Scheduler s = new Scheduler(2,8);
-		FloorController f = new FloorController(8);
+		ElevatorController e = new ElevatorController(openDoors, closedDoors, activeLamps, motors, UPLamps, DOWNLamps, currentFloorLabels);
+		Scheduler s = new Scheduler(logTextBox);
+		FloorController f = new FloorController();
 		
 		JButton startButton = new JButton("Start");
 		startButton.addActionListener(new ActionListener() {

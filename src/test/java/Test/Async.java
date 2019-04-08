@@ -12,7 +12,7 @@ public class Async{
 	RuntimeException exc;
 	
 	public Async() {
-		s = new Scheduler(2,8);
+		s = new Scheduler();
 		
 		sched = new Thread(new Runnable() {
 			@Override

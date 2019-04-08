@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import javax.swing.JTextArea;
+
 import core.Constants;
 import core.ElevatorMessage;
 import core.EventListener;
@@ -18,6 +20,8 @@ public class Scheduler {
 
 	EventListener listener;
 	EventNotifier elevatorNotifier;
+	
+	JTextArea textBox;
 
 	private Calendar cal;
 	private SimpleDateFormat time;
@@ -34,18 +38,31 @@ public class Scheduler {
 	public Scheduler() {
 		listener = new EventListener(Constants.SCHED_PORT, "SCHEDULER LISTENER");
 		elevatorNotifier = new EventNotifier(Constants.ELEV_PORT, "SCHEDULER ELEVATOR NOTIFIER");
-		time = new SimpleDateFormat("HH:mm:ss.SSS");
+		this.time = new SimpleDateFormat("HH:mm:ss.SSS");
+	}
+	
+	public Scheduler(JTextArea textBox) {
+		listener = new EventListener(Constants.SCHED_PORT, "SCHEDULER LISTENER");
+		elevatorNotifier = new EventNotifier(Constants.ELEV_PORT, "SCHEDULER ELEVATOR NOTIFIER");
+		this.time = new SimpleDateFormat("HH:mm:ss.SSS");
+		
+		this.textBox = textBox;
 	}
 
 	public void startListen() throws InterruptedException {
-		cal = Calendar.getInstance();
+		
+
 		System.out.println("SCHEDULER: Starting listener...");
+		cal = Calendar.getInstance();
+		textBox.append("SCHEDULER: Starting listener..."  + time.format(cal.getTime()) + "\n");
 
 		for (;;) {
 			ElevatorMessage msg = listener.waitForNotification();
 			switch (msg.getType()) {
 			case EMPTY:
 				System.out.println("\nEMPTY ELEVATOR" + msg);
+				cal = Calendar.getInstance();
+				textBox.append("\nEMPTY ELEVATOR" + msg + " " + time.format(cal.getTime()) + "\n");
 				
 				synchronized (this) {
 					processing -= 1;
@@ -57,6 +74,8 @@ public class Scheduler {
 				break;
 			case REQ:
 				System.out.println("\nNEW ELEVATOR REQUEST" + msg);
+				cal = Calendar.getInstance();
+				textBox.append("\nNEW ELEVATOR REQUEST" + msg + " " + time.format(cal.getTime()) + "\n");
 				int from = msg.getId();
 				int to = msg.getData().get(1);
 				Constants.DIR direction = Constants.DIR.fromCode(msg.getData().get(0));
@@ -77,6 +96,8 @@ public class Scheduler {
 				int currFloor = msg.getData().get(1);
 
 				System.out.println("\nCAR " + car + " ON FLOOR " + currFloor + " IN DIR " + dir);
+				cal = Calendar.getInstance();
+				textBox.append("\nCAR " + car + " ON FLOOR " + currFloor + " IN DIR " + dir + " " + time.format(cal.getTime()) + "\n");
 				EventNotifier notif = new EventNotifier(msg.PORT, "RETURN MSG");
 				boolean stop = false;
 				int floor = -1;
@@ -126,25 +147,6 @@ public class Scheduler {
 						}
 					}
 				}
-					
-					
-					/*
-					for(int i=0; i<queue.size(); i++ ) {
-						ArrayList<Integer> curr = queue.get(i);
-						if ((curr.get(0) == currFloor) && (curr.get(2) == 1)) {
-							synchronized(this) {
-								queue.remove(i);
-							}
-							stop = true;
-							floor = curr.get(1);
-						}
-					}
-					
-					if(!stop && reqUp.containsKey(currFloor)) {
-						stop = true;
-						floor = reqUp.remove(currFloor);
-					}
-					*/
 					
 				
 

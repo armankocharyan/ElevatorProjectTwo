@@ -14,6 +14,10 @@ import java.net.UnknownHostException;
 import java.util.Collections;
 import java.util.PriorityQueue;
 
+import javax.swing.JLabel;
+import javax.swing.JRadioButton;
+import javax.swing.JTextArea;
+
 
 /**
  * 
@@ -34,12 +38,45 @@ public class Elevator {
 	Integer currFloor = 0;
 	int carNum = 0;
 	
-	public Door door = new Door(false);
+	// ----- GUI VARIABLES ----- //
+	JRadioButton active;
+	JRadioButton motorOn;
+	JRadioButton UPLamp;
+	JRadioButton DOWNLamp;
+	JRadioButton openDoor;
+	JRadioButton closeDoor;
+	JLabel currentFloor;
+	
+	public Door door;
 	
 	BlockingEventNotifier notif = new BlockingEventNotifier(Constants.SCHED_PORT, "ELEVATOR");
 	
 	public Elevator(int carNum) {
+		this.door =  new Door(false);
 		this.carNum = carNum;
+		if(notif == null) {
+			notif = new BlockingEventNotifier(Constants.SCHED_PORT, "ELEVATOR");
+		}
+	}
+	
+	public Elevator(int carNum, JRadioButton active, JRadioButton motorOn,  JRadioButton UPLamp, 
+			JRadioButton DOWNLamp, JRadioButton openDoor, JRadioButton closeDoor, JLabel currentFloor) {
+		
+		
+		this.carNum = carNum;
+		
+		//setting the gui
+		
+		this.active = active;
+		this.motorOn = motorOn;
+		this.UPLamp = UPLamp;
+		this.DOWNLamp = DOWNLamp;
+		this.openDoor = openDoor;
+		this.closeDoor = closeDoor;
+		this.currentFloor = currentFloor;
+		
+		this.door =  new Door(false, openDoor, closeDoor);
+		
 		if(notif == null) {
 			notif = new BlockingEventNotifier(Constants.SCHED_PORT, "ELEVATOR");
 		}
@@ -50,11 +87,17 @@ public class Elevator {
 		System.out.println("\nELEVATOR " + carNum+"  RECEIVED REQUEST GOING " + direction + " ON FLOOR " + floor);
 		if (floor > currFloor) {
 			this.dir = DIR.UP;
+			UPLamp.setSelected(true); //gui update
+			DOWNLamp.setSelected(false); //gui update
 		}
 		else if (floor < currFloor) {
 			this.dir = DIR.DOWN;
+			DOWNLamp.setSelected(true); //gui update
+			UPLamp.setSelected(false); //gui update
 		}
 		else {
+			UPLamp.setSelected(true); //gui update
+			DOWNLamp.setSelected(false); //gui update
 			this.dir = direction;
 			ElevatorMessage msg = new ElevatorMessage(ElevatorMessage.MessageType.ARRIVAL, carNum, dir.getCode(), currFloor);
 			int code = notif.sendMessage(msg, ADDRESS);
@@ -109,8 +152,13 @@ public class Elevator {
 			}
 			
 			currFloor += 1;
+			currentFloor.setText(currFloor.toString()); //updating gui
 			System.out.println("ELEVATOR " + carNum+ " ON FLOOR "+ currFloor);
-			if (up.isEmpty() && !down.isEmpty() && down.peek() <= currFloor) dir = DIR.DOWN;
+			if (up.isEmpty() && !down.isEmpty() && down.peek() <= currFloor) {
+				dir = DIR.DOWN;
+				UPLamp.setSelected(false); //gui update
+				DOWNLamp.setSelected(true); //gui update
+			}
 		}
 		else if(dir == DIR.DOWN) {
 			if (currFloor == 0) {
@@ -119,8 +167,13 @@ public class Elevator {
 				return;
 			}
 			currFloor -= 1;
+			currentFloor.setText(currFloor.toString()); //updating gui
 			System.out.println("ELEVATOR" + carNum+" ON FLOOR "+ currFloor);
-			if (down.isEmpty() && !up.isEmpty() && up.peek() >= currFloor) dir = DIR.UP;
+			if (down.isEmpty() && !up.isEmpty() && up.peek() >= currFloor) {
+				dir = DIR.UP;
+				UPLamp.setSelected(true); //gui update
+				DOWNLamp.setSelected(false); //gui update
+			}
 
 		}
 		else {
@@ -187,10 +240,14 @@ public class Elevator {
 				if(!down.isEmpty()) {
 					if (down.peek() <= currFloor) {
 						dir = DIR.DOWN;
+						UPLamp.setSelected(false); //gui update
+						DOWNLamp.setSelected(true); //gui update
 					}
 				}
 				else {
 					dir = DIR.NONE;
+					UPLamp.setSelected(false); //gui update
+					DOWNLamp.setSelected(false); //gui update
 				}
 			}
 		}
@@ -203,10 +260,14 @@ public class Elevator {
 				if (!up.isEmpty()) {
 					if(up.peek() >= currFloor) {
 						dir = DIR.UP;
+						UPLamp.setSelected(true); //gui update
+						DOWNLamp.setSelected(false); //gui update
 					}
 				}
 				else {
 					dir = DIR.NONE;
+					UPLamp.setSelected(false); //gui update
+					DOWNLamp.setSelected(false); //gui update
 					
 				}
 			}
