@@ -3,6 +3,8 @@ package Logger;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.PrintWriter;
+import java.util.Collections;
+import java.util.LinkedList;
 
 
 public class Logger {
@@ -54,6 +56,18 @@ public class Logger {
 
 	}
 	public static void main(String[] args) {
+		
+		LinkedList<Integer> list = new LinkedList<Integer>();
+		
+		list.add(13);
+		list.add(56);
+		list.add(23);
+		list.add(12);
+		list.add(78);
+		Collections.sort(list);
+		Collections.reverse(list);
+		System.out.println(list);
+		
 
 	}
 

@@ -17,7 +17,7 @@ import Logger.Logger;
 public class Scheduler {
 
 	public static final int PORT = 24;
-	public static final String ADDRESS = "172.17.70.139"; //Change this to the address of the floor and elevator PC. Leave it blank ("") to run locally
+	public static final String ADDRESS = ""; //Change this to the address of the floor and elevator PC. Leave it blank ("") to run locally
 
 	EventListener listener;
 	public static final String schedulerTestLogFileName = "TestLogs/scheduler.testing";
@@ -183,6 +183,8 @@ public class Scheduler {
 	}
 	
 	public void start() {
+		
+		Logger.clearAllLogFiles();
 		Scheduler s = this;
 
 		// producer
@@ -218,7 +220,7 @@ public class Scheduler {
 
 	public static void main(String[] args) {
 		
-		Logger.clearAllLogFiles();
+		
 		Scheduler s = new Scheduler(2,8);
 		s.start();
 	}

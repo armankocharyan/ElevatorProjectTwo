@@ -177,3 +177,36 @@ Elevator1 Has arrived to floor2 at 17:51:40.273
 Elevator0 Has arrived to floor 1 at 17:51:49.182
 Elevator0 Going to requested floor 7 from floor1 at 17:51:49.218
 Elevator0 Has arrived to floor7 at 17:52:07.225
+Elevator0 Going to PICK UP to floor 7 from floor 0 at 01:26:20.506
+Elevator0 Going to PICK UP to floor 0 from floor 0 at 01:54:42.965
+Elevator0 Has arrived to floor 0 at 01:54:42.965
+Elevator0 Going to requested floor 4 from floor0 at 01:54:42.996
+Elevator1 Going to PICK UP to floor 2 from floor 0 at 01:54:42.996
+Elevator1 Has arrived to floor 2 at 01:54:49.017
+Elevator1 Going to requested floor 3 from floor2 at 01:54:49.045
+Elevator1 Has arrived to floor3 at 01:54:52.062
+Elevator1 Going to PICK UP to floor 3 from floor 3 at 01:54:52.064
+Elevator1 Has arrived to floor 3 at 01:54:52.064
+Elevator1 Going to requested floor 2 from floor3 at 01:54:52.095
+Elevator0 Has arrived to floor4 at 01:54:55.001
+Elevator0 Going to PICK UP to floor 1 from floor 4 at 01:54:55.001
+Elevator1 Has arrived to floor2 at 01:54:55.105
+Elevator0 Has arrived to floor 1 at 01:55:04.010
+Elevator0 Going to requested floor 7 from floor1 at 01:55:04.029
+Elevator0 Going to PICK UP to floor 0 from floor 0 at 01:58:18.517
+Elevator0 Has arrived to floor 0 at 01:58:18.517
+Elevator0 Going to requested floor 4 from floor0 at 01:58:18.548
+Elevator1 Going to PICK UP to floor 2 from floor 0 at 01:58:18.548
+Elevator0 Going to PICK UP to floor 0 from floor 0 at 02:00:16.830
+Elevator0 Has arrived to floor 0 at 02:00:16.830
+Elevator0 Going to requested floor 4 from floor0 at 02:00:16.862
+Elevator1 Going to PICK UP to floor 2 from floor 0 at 02:00:16.862
+Elevator1 Has arrived to floor 2 at 02:00:22.886
+Elevator1 Going to requested floor 3 from floor2 at 02:00:22.905
+Elevator1 Has arrived to floor3 at 02:00:25.913
+Elevator1 Going to PICK UP to floor 3 from floor 3 at 02:00:25.914
+Elevator1 Has arrived to floor 3 at 02:00:25.914
+Elevator1 Going to requested floor 2 from floor3 at 02:00:25.946
+Elevator0 Has arrived to floor4 at 02:00:28.868
+Elevator0 Going to PICK UP to floor 1 from floor 4 at 02:00:28.868
+Elevator1 Has arrived to floor2 at 02:00:28.946
