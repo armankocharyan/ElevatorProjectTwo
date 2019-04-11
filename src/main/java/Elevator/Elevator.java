@@ -102,7 +102,8 @@ public class Elevator {
 		this.active.setSelected(false);
 		System.out.println("\nELEVATOR " + carNum+" HAS FAULTED ON FLOOR " + floor + " AND IS OUT OF COMMISSION");
 		cal = Calendar.getInstance();
-		Logger.write("\nELEVATOR " + carNum+" HAS FAULTED ON FLOOR " + floor + " AND IS OUT OF COMMISSION " + time.format(cal.getTime()), fileName); 
+		Logger.write("\nELEVATOR " + carNum+" HAS FAULTED ON FLOOR " + floor + " AND IS OUT OF COMMISSION " + time.format(cal.getTime()), fileName);
+		Logger.write("\nELEVATOR " + carNum+" HAS FAULTED ON FLOOR " + floor + " AND IS OUT OF COMMISSION " + time.format(cal.getTime()), elevatorTestLogFileName); 
 		ElevatorMessage msg = new ElevatorMessage(ElevatorMessage.MessageType.FAULT, carNum, floor);
 		EventNotifier notif = new EventNotifier(Constants.SCHED_PORT,"ELEVATOR FAULT NOTIFICATION");
 		notif.sendMessage(msg, Constants.SCHEDULER_ADDR);
@@ -114,6 +115,7 @@ public class Elevator {
 		System.out.println("\nELEVATOR " + carNum+"  RECEIVED REQUEST GOING " + direction + " ON FLOOR " + floor);
 		cal = Calendar.getInstance();
 		Logger.write("\nELEVATOR " + carNum+"  RECEIVED REQUEST GOING " + direction + " ON FLOOR " + floor + " " + time.format(cal.getTime()), fileName); 
+		Logger.write("\nELEVATOR " + carNum+"  RECEIVED REQUEST GOING " + direction + " ON FLOOR " + floor + " " + time.format(cal.getTime()), elevatorTestLogFileName); 
 		if (floor > currFloor) {
 			this.dir = DIR.UP;
 			UPLamp.setSelected(true); //gui update
@@ -152,6 +154,7 @@ public class Elevator {
 		System.out.println("\n");
 		cal = Calendar.getInstance();
 		Logger.write("\n", fileName); 
+		Logger.write("\n", elevatorTestLogFileName);
 		if(dir == DIR.NONE) {
 			ElevatorMessage msg = new ElevatorMessage(ElevatorMessage.MessageType.EMPTY, carNum);
 			EventNotifier notif = new EventNotifier(Constants.SCHED_PORT,"ELEVATOR EMPTY NOTIFICATION");
@@ -162,6 +165,7 @@ public class Elevator {
 			System.out.println("ELEVATOR " + carNum+"  LEAVING FLOOR " + currFloor);
 			cal = Calendar.getInstance();
 			Logger.write("ELEVATOR " + carNum+"  LEAVING FLOOR " + currFloor + " " +  time.format(cal.getTime()) + "\n", fileName); 
+			Logger.write("ELEVATOR " + carNum+"  LEAVING FLOOR " + currFloor + " " +  time.format(cal.getTime()) + "\n", elevatorTestLogFileName); 
 			Elevator c = this;
 			new java.util.Timer().schedule(
 			        new java.util.TimerTask() {
@@ -183,6 +187,7 @@ public class Elevator {
 				System.out.println("ELEV" + carNum+" ERROR: TRYING TO GO UP ON HIGHEST FLOOR");
 				cal = Calendar.getInstance();
 				Logger.write("ELEV" + carNum+" ERROR: TRYING TO GO UP ON HIGHEST FLOOR" + " " +  time.format(cal.getTime()) + "\n", fileName); 
+				Logger.write("ELEV" + carNum+" ERROR: TRYING TO GO UP ON HIGHEST FLOOR" + " " +  time.format(cal.getTime()) + "\n", elevatorTestLogFileName); 
 				return;
 			}
 			
@@ -191,7 +196,7 @@ public class Elevator {
 			System.out.println("ELEVATOR " + carNum+ " ON FLOOR "+ currFloor);
 			cal = Calendar.getInstance();
 			Logger.write("ELEVATOR " + carNum+ " ON FLOOR "+ currFloor + " " +  time.format(cal.getTime()) + "\n", fileName); 
-			
+			Logger.write("ELEVATOR " + carNum+ " ON FLOOR "+ currFloor + " " +  time.format(cal.getTime()) + "\n", elevatorTestLogFileName); 
 			if (up.isEmpty() && !down.isEmpty() && down.peek() <= currFloor) {
 				dir = DIR.DOWN;
 				UPLamp.setSelected(false); //gui update
@@ -204,6 +209,7 @@ public class Elevator {
 				System.out.println("ELEV ERROR: TRYING TO GO DOWN ON LOWEST FLOOR");
 				cal = Calendar.getInstance();
 				Logger.write("ELEV ERROR: TRYING TO GO DOWN ON LOWEST FLOOR" + " " +  time.format(cal.getTime()) + "\n", fileName); 
+				Logger.write("ELEV ERROR: TRYING TO GO DOWN ON LOWEST FLOOR" + " " +  time.format(cal.getTime()) + "\n", elevatorTestLogFileName); 
 				return;
 			}
 			currFloor -= 1;
@@ -211,6 +217,7 @@ public class Elevator {
 			System.out.println("ELEVATOR" + carNum+" ON FLOOR "+ currFloor);
 			cal = Calendar.getInstance();
 			Logger.write("ELEVATOR" + carNum+" ON FLOOR "+ currFloor + " " +  time.format(cal.getTime()) + "\n", fileName); 
+			Logger.write("ELEVATOR" + carNum+" ON FLOOR "+ currFloor + " " +  time.format(cal.getTime()) + "\n", elevatorTestLogFileName); 
 			if (down.isEmpty() && !up.isEmpty() && up.peek() >= currFloor) {
 				dir = DIR.UP;
 				UPLamp.setSelected(true); //gui update
@@ -223,6 +230,7 @@ public class Elevator {
 			System.out.println("ELEV ERROR: TRYING TO MOVE IN DIR NONE");
 			cal = Calendar.getInstance();
 			Logger.write("ELEV ERROR: TRYING TO MOVE IN DIR NONE" + " " +  time.format(cal.getTime()) + "\n", fileName); 
+			Logger.write("ELEV ERROR: TRYING TO MOVE IN DIR NONE" + " " +  time.format(cal.getTime()) + "\n", elevatorTestLogFileName); 
 					
 		}
 		
@@ -241,7 +249,7 @@ public class Elevator {
 					System.out.println("ELEVATOR " + carNum+ ": ADDED NEW REQUEST UP TO FLOOR " + code);
 					cal = Calendar.getInstance();
 					Logger.write("ELEVATOR " + carNum+ ": ADDED NEW REQUEST UP TO FLOOR " + code + " " +  time.format(cal.getTime()) + "\n", fileName); 
-							
+					Logger.write("ELEVATOR " + carNum+ ": ADDED NEW REQUEST UP TO FLOOR " + code + " " +  time.format(cal.getTime()) + "\n", elevatorTestLogFileName); 		
 					up.add(code);
 				}
 				if(!up.contains(currFloor)) {
@@ -255,7 +263,7 @@ public class Elevator {
 
 					cal = Calendar.getInstance();
 					Logger.write("ELEVATOR "+ carNum+": ADDED NEW REQUEST DOWN TO FLOOR " + code + " " +  time.format(cal.getTime()) + "\n", fileName); 
-					
+					Logger.write("ELEVATOR "+ carNum+": ADDED NEW REQUEST DOWN TO FLOOR " + code + " " +  time.format(cal.getTime()) + "\n", elevatorTestLogFileName); 
 					down.add(code);
 				}
 				if(!down.contains(currFloor)) {
@@ -268,19 +276,20 @@ public class Elevator {
 			System.out.println("ELEVATOR: BLOCKING NOPTIFIER DIDNT WORK");
 			cal = Calendar.getInstance();
 			Logger.write("ELEVATOR: BLOCKING NOPTIFIER DIDNT WORK" + " " +  time.format(cal.getTime()) + "\n", fileName); 
-			
+			Logger.write("ELEVATOR: BLOCKING NOPTIFIER DIDNT WORK" + " " +  time.format(cal.getTime()) + "\n", elevatorTestLogFileName); 
 			
 		}
 		else if (code == -1) {
 			System.out.println("ELEVATOR "+ carNum+": NO NEW REQUEST ON FLOOR " + currFloor);
 			cal = Calendar.getInstance();
 			Logger.write("ELEVATOR "+ carNum+": NO NEW REQUEST ON FLOOR " + currFloor + " " +  time.format(cal.getTime()) + "\n", fileName); 
+			Logger.write("ELEVATOR "+ carNum+": NO NEW REQUEST ON FLOOR " + currFloor + " " +  time.format(cal.getTime()) + "\n", elevatorTestLogFileName); 
 		}
 		else if (code == -3) {
 			System.out.println("ELEVATOR: UNKNOWN MESSAGE " + currFloor);
 			cal = Calendar.getInstance();
 			Logger.write("ELEVATOR: UNKNOWN MESSAGE " + currFloor + " " +  time.format(cal.getTime()) + "\n", fileName); 
-
+			Logger.write("ELEVATOR: UNKNOWN MESSAGE " + currFloor + " " +  time.format(cal.getTime()) + "\n", elevatorTestLogFileName); 
 		}
 		
 		System.out.println("ELEVATOR " + carNum+" UP: " + up);
@@ -288,8 +297,10 @@ public class Elevator {
 
 		cal = Calendar.getInstance();
 		Logger.write("ELEVATOR " + carNum+" UP: " + up +  time.format(cal.getTime()) + "\n", fileName); 
+		Logger.write("ELEVATOR " + carNum+" UP: " + up +  time.format(cal.getTime()) + "\n", elevatorTestLogFileName); 
 		cal = Calendar.getInstance();
 		Logger.write("ELEVATOR "+ carNum+ " DOWN: " + down +  time.format(cal.getTime()) + "\n", fileName); 
+		Logger.write("ELEVATOR "+ carNum+ " DOWN: " + down +  time.format(cal.getTime()) + "\n", elevatorTestLogFileName); 
 		
 		if(dir == DIR.UP) {
 			if(up.peek() == currFloor) {
@@ -338,7 +349,7 @@ public class Elevator {
 			System.out.println("ELEVATOR " + carNum+": DOORS OPENING ");
 			cal = Calendar.getInstance();
 			Logger.write("ELEVATOR " + carNum+": DOORS OPENING " + " " + time.format(cal.getTime()) + "\n", fileName); 
-			
+			Logger.write("ELEVATOR " + carNum+": DOORS OPENING " + " " + time.format(cal.getTime()) + "\n", elevatorTestLogFileName);
 			door.open();
 			ElevatorMessage newMsg = new ElevatorMessage(ElevatorMessage.MessageType.DOORS, carNum, currFloor);
 			EventNotifier notif = new EventNotifier(Constants.SCHED_PORT,"ELEVATOR DOORS OPEN NOTIFICATION");
@@ -353,6 +364,7 @@ public class Elevator {
 			            	System.out.println("ELEVATOR "+ carNum+": DOORS CLOSING");
 			            	cal = Calendar.getInstance();
 			    			Logger.write("ELEVATOR "+ carNum+": DOORS CLOSING" + " " +  time.format(cal.getTime()) + "\n", fileName); 
+			    			Logger.write("ELEVATOR "+ carNum+": DOORS CLOSING" + " " +  time.format(cal.getTime()) + "\n", elevatorTestLogFileName); 
 			            	c.moveFloor();
 			            }
 			        }, Constants.MS_FOR_DOOR

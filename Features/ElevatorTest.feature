@@ -11,4 +11,3 @@ Feature: Testing the elevator subsystem
     Then check to see if the scheduler is listening
     Then check to see if the elevator has picked up a person
     Then check to see if the elevator is taking the person to the correct floor
-    Then check to see if the there was an arrival in the floor

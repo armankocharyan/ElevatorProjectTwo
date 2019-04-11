@@ -57,6 +57,7 @@ public class Floor {
 		System.out.println("\nFLOOR "+ floorNum + " REQUESTED AN ELEVATOR GOING UP");
 		cal = Calendar.getInstance();
 		Logger.write("\nFLOOR "+ floorNum + " REQUESTED AN ELEVATOR GOING UP " + time.format(cal.getTime()), fileName); 
+		Logger.write("\nFLOOR "+ floorNum + " REQUESTED AN ELEVATOR GOING UP " + time.format(cal.getTime()), floorTestLogFileName); 
 		reqLampUp.setOn(true);
 		reqBtnUp.setPressed(true);
 		this.notifier.sendMessage(new ElevatorMessage(ElevatorMessage.MessageType.REQ, this.floorNum, Constants.DIR.UP.getCode(), num, fault), Constants.SCHEDULER_ADDR);
@@ -71,6 +72,7 @@ public class Floor {
 		System.out.println("\nFLOOR "+ floorNum + " REQUESTED AN ELEVATOR GOING DOWN");
 		cal = Calendar.getInstance();
 		Logger.write("\nFLOOR "+ floorNum + " REQUESTED AN ELEVATOR GOING DOWN " + time.format(cal.getTime()), fileName); 
+		Logger.write("\nFLOOR "+ floorNum + " REQUESTED AN ELEVATOR GOING DOWN " + time.format(cal.getTime()), floorTestLogFileName); 
 		reqLampDown.setOn(true);
 		reqBtnDown.setPressed(true);
 		this.notifier.sendMessage(new ElevatorMessage(ElevatorMessage.MessageType.REQ, this.floorNum, Constants.DIR.DOWN.getCode(), num, fault), Constants.SCHEDULER_ADDR);
@@ -92,6 +94,7 @@ public class Floor {
 		System.out.println("\nFLOOR " + floorNum + " ELEVATOR CAR "+ carNum + " ARRIVAL.");
 		cal = Calendar.getInstance();
 		Logger.write("\nFLOOR " + floorNum + " ELEVATOR CAR "+ carNum + " ARRIVAL. " + time.format(cal.getTime()), fileName); 
+		Logger.write("\nFLOOR " + floorNum + " ELEVATOR CAR "+ carNum + " ARRIVAL. " + time.format(cal.getTime()), floorTestLogFileName); 
 		if (direction == Constants.DIR.UP) {
 			resetUpBtn();
 			directionLampUp.setOn(true);
@@ -112,6 +115,7 @@ public class Floor {
 		System.out.println("\nPASSENGER ON FLOOR "+ floorNum + " ENTERED ELEVATOR CAR " + carNum + " TO FLOOR " + floor);
 		cal = Calendar.getInstance();
 		Logger.write("\nPASSENGER ON FLOOR "+ floorNum + " ENTERED ELEVATOR CAR " + carNum + " TO FLOOR " + floor + " " + time.format(cal.getTime()), fileName); 
+		Logger.write("\nPASSENGER ON FLOOR "+ floorNum + " ENTERED ELEVATOR CAR " + carNum + " TO FLOOR " + floor + " " + time.format(cal.getTime()), floorTestLogFileName);
 		if (dir == Constants.DIR.UP) {
 			reqUp = -1;
 		}else {

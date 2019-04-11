@@ -22,68 +22,29 @@ public class TestCases{
 	@Given("^all the subsystems are running concurrently$")
 	public void runningSubsystems() throws InterruptedException{
 		
-		//loading up input data
-		inputData = File.ReadFile.getData("inputFile.txt");
-		
-		Logger.clearAllTextFiles();
-		//clear all text
-		
-		Thread t1 = new Thread(new Runnable() {
-			@Override
-			public void run() 
-            { 
-				Scheduler.main(args);
-				
-            } 
-		});
-		
-		Thread t2 = new Thread(new Runnable() {
-			@Override
-			public void run() 
-            { 
-				ElevatorController.main(args);
-            } 
-		});
-		
-		Thread t3 = new Thread(new Runnable() {
-			@Override
-			public void run() 
-            { 
-				FloorController.main(args);
-            } 
-		});
-		
-		
-	    // Start all threads 
-        t1.start(); 
-		Thread.sleep(1000);
-        t2.start(); 
-		Thread.sleep(1000);
-        t3.start();
-        Thread.sleep(45000);
-        
-        
-        
-        t1.join();
-        t2.join();
-        t3.join();
-        
-		
-	}
-	
-	
-	@Then("^check to see if there is a floor request from the input file$")
-	public void check_to_see_if_there_is_a_floor_request_from_the_input_file() throws Throwable {
-	    ArrayList<String> floorTestLog = ReadFile.parseInput(Floor.Floor.floorTestLogFileName);
+		ArrayList<String> schedulerTestLog = ReadFile.parseInput(Scheduler.schedulerTestLogFileName);
 	    boolean itIsThere = false;
-	    for(int i = 0; i < floorTestLog.size(); i++) {
-	    	if (floorTestLog.get(i).contains("FLOOR "+ Integer.toString(inputData.get(0).getFloorNumber())+ " REQUESTED")){
+	    for(int i = 0; i < schedulerTestLog.size(); i++) {
+	    	if (schedulerTestLog.get(i).contains("Starting listener")){
 	    		itIsThere  = true;
 	    	}
 	    }
 	    
 	   assertEquals(itIsThere , true);
 	    
+	}
+	
+	@Then("^check to see if there is a floor request from the input file$")
+	public void check_to_see_if_there_is_a_floor_request_from_the_input_file() throws Throwable {
+		ArrayList<String> floorTestLog = ReadFile.parseInput(Floor.Floor.floorTestLogFileName);
+	    boolean itIsThere = false;
+	    for(int i = 0; i < floorTestLog.size(); i++) {
+	    	if (floorTestLog.get(i).contains("REQUESTED AN ELEVATOR")){
+	    		itIsThere  = true;
+	    	}
+	    }
+	    
+	   assertEquals(itIsThere , true);
 	}
 	
 	@Then("^check to see if the scheduler is listening$")
@@ -105,7 +66,7 @@ public class TestCases{
 	    ArrayList<String> elevatorTestLog = ReadFile.parseInput(Elevator.Elevator.elevatorTestLogFileName);
 	    boolean itIsThere = false;
 	    for(int i = 0; i < elevatorTestLog.size(); i++) {
-	    	if (elevatorTestLog.get(i).contains("Going to requested floor " + Integer.toString(inputData.get(0).getfloorToGo() ) )){
+	    	if (elevatorTestLog.get(i).contains("RECEIVED REQUEST GOING" )){
 	    		itIsThere  = true;
 	    	}
 	    }
@@ -119,21 +80,7 @@ public class TestCases{
 		ArrayList<String> elevatorTestLog = ReadFile.parseInput(Elevator.Elevator.elevatorTestLogFileName);
 	    boolean itIsThere = false;
 	    for(int i = 0; i < elevatorTestLog.size(); i++) {
-	    	if (elevatorTestLog.get(i).contains("arrived to floor" + Integer.toString(inputData.get(0).getfloorToGo() ))){
-	    		itIsThere  = true;
-	    	}
-	    }
-	    
-	   assertEquals(itIsThere , true);
-	}
-	
-	@Then("^check to see if the there was an arrival in the floor$")
-	public void check_to_see_if_the_there_was_an_arrival_in_the_floor() throws Throwable {
-		
-		ArrayList<String> floorTestLog = ReadFile.parseInput(Floor.Floor.floorTestLogFileName);
-	    boolean itIsThere = false;
-	    for(int i = 0; i < floorTestLog.size(); i++) {
-	    	if (floorTestLog.get(i).contains("FLOOR "+ Integer.toString(inputData.get(0).getFloorNumber())) && floorTestLog.get(i).contains("ARRIVAL")){
+	    	if (elevatorTestLog.get(i).contains("ON FLOOR")){
 	    		itIsThere  = true;
 	    	}
 	    }

@@ -79,6 +79,7 @@ public class FloorController {
 
 	public void start() {
 		Logger.clearAllLogFiles();
+		Logger.clearAllTextFiles();
 		FloorController s = this;
 
 		// start the thread that listens for notifications from the scheduler
